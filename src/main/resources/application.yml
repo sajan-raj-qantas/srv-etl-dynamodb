@@ -1,0 +1,26 @@
+spring.profiles.active: ${profile:local}
+
+info:
+  app:
+    name: demo
+    description: Etl Demo
+    version: 1.0.0
+
+aws:
+  region: "ap-southeast-2"
+  dynamodb:
+    endpoint: https://dynamodb.ap-southeast-2.amazonaws.com
+
+cloud:
+  aws:
+    stack:
+      auto: false
+---
+spring:
+    profiles: local
+
+aws:
+  dynamodb:
+    tableName: avro-dev-integration-motorapplication-application
+
+---
