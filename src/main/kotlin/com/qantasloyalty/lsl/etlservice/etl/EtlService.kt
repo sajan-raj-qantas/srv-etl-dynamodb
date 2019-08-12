@@ -8,28 +8,30 @@ import com.amazonaws.services.dynamodbv2.model.ScanResult
 import com.google.common.util.concurrent.RateLimiter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import java.util.concurrent.atomic.AtomicInteger
 
 @Service
 class EtlService @Autowired constructor(
         private val dynamoDB: AmazonDynamoDB,
         private val extractor: Extractor,
-        private val transformer: Transformer){
+        private val transformer: Transformer) {
 
-    private val LOG = LoggerFactory.getLogger(object{}::class.java.`package`.name)
+    private val LOG = LoggerFactory.getLogger(object {}::class.java.`package`.name)
 
-    suspend fun export(threads: Int, id: Int, channel: SendChannel<ScanResult>) {
+    suspend fun export(threads: Int, id: Int, channel: SendChannel<ScanResultWrapper>) {
         val rateLimiter = RateLimiter.create(5.0)
 
         // Track how much throughput we consume on each page
@@ -38,6 +40,7 @@ class EtlService @Autowired constructor(
         // Initialize the pagination token
         var exclusiveStartKey: Map<String, AttributeValue>? = null
 
+        var iterations = 1
         do {
             // Let the rate limiter wait until our desired throughput "recharges"
             rateLimiter.acquire(permitsToConsume)
@@ -62,34 +65,61 @@ class EtlService @Autowired constructor(
             if (permitsToConsume <= 0) {
                 permitsToConsume = 1
             }
-            println("Read result -$result")
-            channel.send(result)
+//            println("Read result -$result")
+            channel.send(ScanResultWrapper(id, iterations, result))
             //Stream.generate { result }
 
+            iterations = iterations.inc()
+            println("id $id on iteration $iterations")
+        } while (exclusiveStartKey != null && iterations < 5)
 
-        } while (exclusiveStartKey != null)
     }
 
     fun doEtl(threads: Int) = runBlocking {
-        val receiveChannel = Channel<ScanResult>()
+        val receiveChannel = Channel<ScanResultWrapper>()
+        val below90 = Channel<ScanResultWrapper>()
+        val above90 = Channel<ScanResultWrapper>()
 
+        val jobs = mutableListOf<Job>()
+//        val job = Job()
+
+        jobs += launch {
+            receiveChannel.consumeEach {
+                println("${it.segment}:: ${it.iteration} - Got ${it.scanResult.count} items:: ${it.scanResult.lastEvaluatedKey}")
+                below90.send(it)
+                above90.send(it)
+            }
+        }
+
+        jobs += launch {
+            below90.consumeEach {
+                println("Below90 - ${it.segment}:: ${it.iteration}")
+            }
+        }
+
+        jobs += launch {
+            above90.consumeEach {
+                println("Above90 - ${it.segment}:: ${it.iteration}")
+            }
+        }
+
+        val countdownLatch = AtomicInteger(threads + 1)
         for (i in 0..threads) {
-            launch { export(threads, i, receiveChannel)}
+            jobs += async { export(threads, i, receiveChannel) }.also {
+                it.invokeOnCompletion {
+                    if (countdownLatch.decrementAndGet() == 0) {
+                        receiveChannel.close()
+                        println("Closed channel")
+                    }
+                    println("Completed $i")
+                }
+            }
         }
 
-        val below90 = Channel<ScanResult>()
-        val above90 = Channel<ScanResult>()
-
-        receiveChannel.consumeEach {
-            below90.send(it)
-            above90.send(it)
-        }
-
-        kotlinx.coroutines.delay(10000)
-        coroutineContext.cancelChildren()
+        jobs.joinAll() //is this right?
     }
 
-    fun doEtl() = GlobalScope.launch{
+    fun doEtl() = GlobalScope.launch {
         val channel: ReceiveChannel<ScanResult> = extract()
         launchProcessor(TransformType.PARTY_ABOVE_90, channel)
         launchProcessor(TransformType.APP_ABOVE_90, channel)
@@ -99,7 +129,7 @@ class EtlService @Autowired constructor(
     }
 
     //TODO FIX : Having trouble calling this function from extractor.
-    fun CoroutineScope.extract(): ReceiveChannel<ScanResult> =produce {
+    fun CoroutineScope.extract(): ReceiveChannel<ScanResult> = produce {
 
         // Initialize the rate limiter to allow 25 read capacity units / sec
         val rateLimiter = RateLimiter.create(5.0)
@@ -146,3 +176,4 @@ class EtlService @Autowired constructor(
 
 }
 
+data class ScanResultWrapper(val segment: Int, val iteration: Int, val scanResult: ScanResult)
