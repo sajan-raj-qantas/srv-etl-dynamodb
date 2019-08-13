@@ -1,30 +1,28 @@
 package com.qantasloyalty.lsl.etlservice.etl
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
-import com.amazonaws.services.dynamodbv2.datamodeling.encryption.DynamoDBEncryptor
-import com.amazonaws.services.dynamodbv2.datamodeling.encryption.EncryptionContext
-import com.amazonaws.services.dynamodbv2.datamodeling.encryption.EncryptionFlags
-import com.amazonaws.services.dynamodbv2.datamodeling.encryption.providers.DirectKmsMaterialProvider
-import com.amazonaws.services.dynamodbv2.model.AttributeValue
-import com.amazonaws.services.dynamodbv2.model.GetItemRequest
-import com.amazonaws.services.kms.AWSKMSClientBuilder
+import com.amazonaws.services.dynamodbv2.model.*
+import com.google.common.util.concurrent.RateLimiter
+import com.qantasloyalty.lsl.etlservice.mapper.ApplicationDataDecryptor
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.junit4.SpringRunner
 
+@SpringBootTest
+@RunWith(SpringRunner::class)
 class DecryptionTest {
+
+    @Autowired
+    lateinit var decryptor: ApplicationDataDecryptor
+
+    @Autowired
+    lateinit var dynamoDB: AmazonDynamoDB
 
     @Test
     fun testGetAndDecryptItem() {
-        val credentialsProvider = DefaultAWSCredentialsProviderChain()
-        val kms = AWSKMSClientBuilder
-                .standard()
-                .withCredentials(credentialsProvider)
-                .build()
-
-        val materialsProvider = DirectKmsMaterialProvider(kms, null)
-        val encryptor = DynamoDBEncryptor.getInstance(materialsProvider)
-
-
         val client = AmazonDynamoDBClientBuilder.defaultClient()
         val item: Map<String, AttributeValue> = GetItemRequest("avro-dev-integration-motorapplication-application-data",
                 mapOf(
@@ -33,19 +31,38 @@ class DecryptionTest {
                 ))
                 .let { client.getItem(it) }
                 .let { it.item }
-        val attributeFlags: Map<String, Set<EncryptionFlags>> = mapOf(
-                "attributes" to setOf(EncryptionFlags.ENCRYPT, EncryptionFlags.SIGN)
-        )
-
-        val encryptionContext = EncryptionContext.Builder()
-                .withTableName("avro-dev-integration-motorapplication-application-data")
-                .withHashKeyName("applicationId")
-                .withRangeKeyName("createdTimestamp")
-                .build()
-
-        val after = encryptor.decryptRecord(item, attributeFlags, encryptionContext)
+        val after = decryptor.decrypt(item)
         println("")
         println("Before - $item")
         println("After - $after")
+    }
+
+    @Test
+    fun testGetAndDecryptItemBasedOnScanRequest() {
+        val client = AmazonDynamoDBClientBuilder.defaultClient()
+        val item: MutableMap<String, AttributeValue>? = getScanResult()?.items?.get(0)
+        val after = decryptor.decrypt(item!!)
+        println("")
+        println("Before - $item")
+        println("After - $after")
+    }
+
+    private fun getScanResult(): ScanResult? {
+        // Initialize the pagination token
+        var exclusiveStartKey: Map<String, AttributeValue>? = null
+
+            // Do the scan
+            val scan = ScanRequest()
+                    .withTableName("avro-dev-integration-motorapplication-application-data")
+                    //.withFilterExpression()
+                    .withLimit(1)
+                    .withReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL)
+                    .withExclusiveStartKey(exclusiveStartKey)
+
+            val result = dynamoDB!!.scan(scan)
+            exclusiveStartKey = result.lastEvaluatedKey
+
+            println("Read result -$result")
+            return result
     }
 }

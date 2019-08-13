@@ -3,12 +3,15 @@ package com.qantasloyalty.lsl.etlservice.mapper
 import com.amazonaws.services.dynamodbv2.model.AttributeValue
 import org.springframework.stereotype.Component
 import com.qantasloyalty.lsl.etlservice.model.ApplicationData
+import org.springframework.beans.factory.annotation.Autowired
 
 @Component
-class ApplicationMapper {
+class ApplicationMapper(@Autowired val decryptor:ApplicationDataDecryptor) {
 
     fun fromAttributeValues(attributesMap: Map<String, AttributeValue>): ApplicationData {
-        return ApplicationData(transform(attributesMap))
+
+        val decrypt = decryptor.decrypt(attributesMap)
+        return ApplicationData(transform(decrypt))
     }
 
     private fun transform(attributesMap: Map<String, AttributeValue>): MutableMap<String, Any?> {
