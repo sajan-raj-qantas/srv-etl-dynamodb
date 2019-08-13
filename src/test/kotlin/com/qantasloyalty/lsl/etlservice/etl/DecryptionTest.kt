@@ -28,13 +28,13 @@ class DecryptionTest {
         val client = AmazonDynamoDBClientBuilder.defaultClient()
         val item: Map<String, AttributeValue> = GetItemRequest("avro-dev-integration-motorapplication-application-data",
                 mapOf(
-                        Pair("applicationId", AttributeValue("QM10TY43KB")),
-                        Pair("createdTimestamp", AttributeValue("2019-08-12T16:45:29.999"))
+                        "applicationId" to AttributeValue("QM10TY43KB"),
+                        "createdTimestamp" to AttributeValue("2019-08-12T16:45:29.999")
                 ))
                 .let { client.getItem(it) }
                 .let { it.item }
         val attributeFlags: Map<String, Set<EncryptionFlags>> = mapOf(
-                Pair("attributes", setOf(EncryptionFlags.ENCRYPT, EncryptionFlags.SIGN))
+                "attributes" to setOf(EncryptionFlags.ENCRYPT, EncryptionFlags.SIGN)
         )
 
         val encryptionContext = EncryptionContext.Builder()
