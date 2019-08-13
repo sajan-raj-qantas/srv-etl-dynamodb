@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class ApplicationDataDecryptor {
-
-    fun decrypt(item: Map<String, AttributeValue>): Map<String, AttributeValue> {
         val credentialsProvider = DefaultAWSCredentialsProviderChain()
         val kms = AWSKMSClientBuilder
                 .standard()
@@ -22,18 +20,17 @@ class ApplicationDataDecryptor {
         val materialsProvider = DirectKmsMaterialProvider(kms, null)
         val encryptor = DynamoDBEncryptor.getInstance(materialsProvider)
 
-        val attributeFlags: Map<String, Set<EncryptionFlags>> = mapOf(
-                "attributes" to setOf(EncryptionFlags.ENCRYPT, EncryptionFlags.SIGN)
-        )
         val encryptionContext = EncryptionContext.Builder()
                 .withTableName("avro-dev-integration-motorapplication-application-data")
                 .withHashKeyName("applicationId")
                 .withRangeKeyName("createdTimestamp")
                 .build()
-        val decrypted = encryptor.decryptRecord(item, attributeFlags, encryptionContext)
-        println("")
-        println("Before - $item")
-        println("After - $decrypted")
-        return decrypted
+
+        val attributeFlags: Map<String, Set<EncryptionFlags>> = mapOf(
+                "attributes" to setOf(EncryptionFlags.ENCRYPT, EncryptionFlags.SIGN)
+        )
+
+    fun decrypt(item: Map<String, AttributeValue>): Map<String, AttributeValue> {
+        return encryptor.decryptRecord(item, attributeFlags, encryptionContext)
     }
 }

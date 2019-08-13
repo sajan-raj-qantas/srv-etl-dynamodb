@@ -6,7 +6,7 @@ import com.qantasloyalty.lsl.etlservice.model.ApplicationData
 import org.springframework.beans.factory.annotation.Autowired
 
 @Component
-class ApplicationMapper(@Autowired val decryptor:ApplicationDataDecryptor) {
+class ApplicationMapper(@Autowired val decryptor: ApplicationDataDecryptor) {
 
     fun fromAttributeValues(attributesMap: Map<String, AttributeValue>): ApplicationData {
 
