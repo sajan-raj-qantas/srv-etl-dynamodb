@@ -47,9 +47,9 @@ class EtlService @Autowired constructor(
 
             // Do the scan
             val scan = ScanRequest()
-                    .withTableName("avro-dev-integration-motorapplication-application")
+                    .withTableName("avro-dev-integration-motorapplication-application-data")
                     //.withFilterExpression()
-                    .withLimit(100)
+                    .withLimit(10)
                     .withTotalSegments(threads + 1)
                     .withSegment(id)
                     .withReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL)
@@ -65,7 +65,7 @@ class EtlService @Autowired constructor(
             if (permitsToConsume <= 0) {
                 permitsToConsume = 1
             }
-//            println("Read result -$result")
+            println("Read result -$result")
             channel.send(ScanResultWrapper(id, iterations, result))
             //Stream.generate { result }
 
@@ -93,17 +93,21 @@ class EtlService @Autowired constructor(
 
         jobs += launch {
             below90.consumeEach {
-                println("Below90 - ${it.segment}:: ${it.iteration}")
+                doForBelow90(it)
             }
         }
 
         jobs += launch {
             above90.consumeEach {
-                println("Above90 - ${it.segment}:: ${it.iteration}")
+                doForAbove90(it)
             }
         }
 
-        val countdownLatch = AtomicInteger(threads + 1)
+        for(i in 0..threads){
+            jobs += launch { export(threads,i,receiveChannel) }
+        }
+
+       /* val countdownLatch = AtomicInteger(threads + 1)
         for (i in 0..threads) {
             jobs += async { export(threads, i, receiveChannel) }.also {
                 it.invokeOnCompletion {
@@ -114,11 +118,20 @@ class EtlService @Autowired constructor(
                     println("Completed $i")
                 }
             }
-        }
+        }*/
 
         jobs.joinAll() //is this right?
     }
+    private fun doForBelow90(scanResultWrapper: ScanResultWrapper) {
+        println("Below90 - ${scanResultWrapper.segment}:: ${scanResultWrapper.iteration}")
+        transformer.transformScan(scanResultWrapper.scanResult,TransformType.BELOW_90)
+    }
 
+    private fun doForAbove90(scanResultWrapper: ScanResultWrapper) {
+        println("Above90 - ${scanResultWrapper.segment}:: ${scanResultWrapper.iteration}")
+        transformer.transformScan(scanResultWrapper.scanResult,TransformType.ABOVE_90)
+    }
+    /*
     fun doEtl() = GlobalScope.launch {
         val channel: ReceiveChannel<ScanResult> = extract()
         launchProcessor(TransformType.PARTY_ABOVE_90, channel)
@@ -126,53 +139,7 @@ class EtlService @Autowired constructor(
         launchProcessor(TransformType.PARTY_BELOW_90, channel)
         launchProcessor(TransformType.APP_BELOW_90, channel)
         println("Launched 4 processors...")
-    }
-
-    //TODO FIX : Having trouble calling this function from extractor.
-    fun CoroutineScope.extract(): ReceiveChannel<ScanResult> = produce {
-
-        // Initialize the rate limiter to allow 25 read capacity units / sec
-        val rateLimiter = RateLimiter.create(5.0)
-
-        // Track how much throughput we consume on each page
-        var permitsToConsume = 1
-
-        // Initialize the pagination token
-        var exclusiveStartKey: Map<String, AttributeValue>? = null
-
-        do {
-            // Let the rate limiter wait until our desired throughput "recharges"
-            rateLimiter.acquire(permitsToConsume)
-
-            // Do the scan
-            val scan = ScanRequest()
-                    .withTableName("avro-dev-integration-motorapplication-application")
-                    //.withFilterExpression()
-                    .withLimit(100)
-                    .withReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL)
-                    .withExclusiveStartKey(exclusiveStartKey)
-            val result = dynamoDB!!.scan(scan)
-            exclusiveStartKey = result.lastEvaluatedKey
-
-            // Account for the rest of the throughput we consumed,
-            // now that we know how much that scan request cost
-            val consumedCapacity = result.consumedCapacity.capacityUnits!!
-            permitsToConsume = (consumedCapacity - 1.0).toInt()
-            if (permitsToConsume <= 0) {
-                permitsToConsume = 1
-            }
-            println("Read result -$result")
-            send(result)
-            //Stream.generate { result }
-
-
-        } while (exclusiveStartKey != null)
-
-    }
-
-    fun CoroutineScope.launchProcessor(processorType: TransformType, channel: ReceiveChannel<ScanResult>) = launch {
-        transformer.transformScan(channel, processorType)
-    }
+    }*/
 
 }
 
