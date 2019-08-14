@@ -2,7 +2,6 @@ package com.qantasloyalty.lsl.etlservice.model
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue
 import org.junit.Test
-import org.junit.jupiter.api.Assertions.*
 
 internal class ApplicationDataTest {
 
@@ -13,8 +12,10 @@ internal class ApplicationDataTest {
                 "applicationId" to AttributeValue().withS("test")
         )
 
-        val applicationData = ApplicationData(attributes)
+        val applicationData = ApplicationDataWithDelegate(attributes)
         println(applicationData)
         println(applicationData.applicationId)
+        println(applicationData.riskAddressPostcode)
+
     }
 }

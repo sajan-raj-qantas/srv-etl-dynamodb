@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class Extractor @Autowired constructor(private val dynamoDB: AmazonDynamoDB) {
+class  Extractor @Autowired constructor(private val dynamoDB: AmazonDynamoDB) {
 
     suspend fun CoroutineScope.extractData(): ReceiveChannel<ScanResult> =produce {
 

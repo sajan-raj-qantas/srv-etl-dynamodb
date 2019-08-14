@@ -88,10 +88,15 @@
             <artifactId>lombok</artifactId>
             <version>1.18.8</version>
         </dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.jayway.jsonpath</groupId>
 			<artifactId>json-path</artifactId>
 			<version>2.4.0</version>
+		</dependency>-->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20190722</version>
 		</dependency>
     </dependencies>
 
