@@ -11,7 +11,8 @@ class ApplicationMapper(@Autowired val decryptor: ApplicationDataDecryptor) {
     fun fromAttributeValues(attributesMap: Map<String, AttributeValue>): ApplicationData {
 
         val decrypt = decryptor.decrypt(attributesMap)
-        return ApplicationData(transform(decrypt))
+//        return ApplicationData(transform(decrypt))
+        return ApplicationData(decrypt)
     }
 
     private fun transform(attributesMap: Map<String, AttributeValue>): MutableMap<String, Any?> {
