@@ -11,7 +11,7 @@ class LoggerDelegate : ReadOnlyProperty<Any, Logger> {
     override fun getValue(thisRef: Any, property: KProperty<*>): Logger {
         if (!::logger.isInitialized) {
             logger = if (thisRef::class.isCompanion) {
-                LoggerFactory.getLogger(thisRef.javaClass.canonicalName.dropLast(10))
+                LoggerFactory.getLogger(thisRef.javaClass.enclosingClass)
             } else {
                 LoggerFactory.getLogger(thisRef.javaClass)
             }
