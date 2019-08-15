@@ -1,5 +1,6 @@
 package com.qantasloyalty.lsl.etlservice.model
 
+import com.amazonaws.services.dynamodbv2.document.Item
 import org.json.JSONException
 import org.json.JSONObject
 import java.time.LocalDate
@@ -63,11 +64,14 @@ class ApplicationData {
         var mapJson = JSONObject(map)
         this.applicationId = mapJson.getString("applicationId")
 
-        val attributesPolicyJson = JSONObject(mapJson.getString("attributes")).getJSONObject("policy")
 
         try {
-            this.riskAddressPostcode = attributesPolicyJson.getJSONObject("riskAddress").getString("postcode")
-            this.policyDetailsNcdProtection = if (attributesPolicyJson.getJSONObject("policyDetails").has("ncdProtection")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("ncdProtection") else null
+
+            if(mapJson.has("attributes")) {
+                val attributesPolicyJson = JSONObject(mapJson.getString("attributes")).getJSONObject("policy")
+                this.riskAddressPostcode = attributesPolicyJson.getJSONObject("riskAddress").getString("postcode")
+                this.policyDetailsNcdProtection = if (attributesPolicyJson.getJSONObject("policyDetails").has("ncdProtection")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("ncdProtection") else null
+            }
             //TODO This field is in MotorApplication table. this.salesChannel: String? = if(null
             //TODO This field is hardcoded value in code. this.InsuranceProductProductCode: String? = if(null,
             //TODO This field is hardcoded value in code. this.InsuranceProductProductGroup: String? = null,
@@ -102,42 +106,45 @@ class ApplicationData {
         var mapJson = JSONObject(map)
         this.applicationId = mapJson.getString("applicationId")
 
-        val attributesPolicyJson = JSONObject(mapJson.getString("attributes")).getJSONObject("policy")
+
 
         try {
-            this.riskAddressPostcode = attributesPolicyJson.getJSONObject("riskAddress").getString("postcode")
-            this.riskAddressState = if (attributesPolicyJson.getJSONObject("riskAddress").has("state")) attributesPolicyJson.getJSONObject("riskAddress").getString("state") else null
-            this.carParkingMethod = if (attributesPolicyJson.getJSONObject("car").has("carParkingMethod")) attributesPolicyJson.getJSONObject("car").getString("carParkingMethod") else null
-            this.carRedBookID = if (attributesPolicyJson.getJSONObject("car").has("redbookId")) attributesPolicyJson.getJSONObject("car").getString("redbookId") else null
-            this.carRegistrationNumber = if (attributesPolicyJson.getJSONObject("car").has("registrationYear")) attributesPolicyJson.getJSONObject("car").getString("registrationYear") else null
-            this.carUse = if (attributesPolicyJson.getJSONObject("car").has("use")) attributesPolicyJson.getJSONObject("car").getString("use") else null
-            this.carVehicleColour = if (attributesPolicyJson.getJSONObject("car").has("vehicleColour")) attributesPolicyJson.getJSONObject("car").getString("vehicleColour") else null
-            this.carVehicleCondition = if (attributesPolicyJson.getJSONObject("car").has("vehicleCondition")) attributesPolicyJson.getJSONObject("car").getString("vehicleCondition") else null
-            this.carVehicleFinanceType = if (attributesPolicyJson.getJSONObject("car").has("vehicleFinanceType")) attributesPolicyJson.getJSONObject("car").getString("vehicleFinanceType") else null
-            this.carAnnualMileage = if (attributesPolicyJson.getJSONObject("car").has("annualMileage")) attributesPolicyJson.getJSONObject("car").getString("annualMileage") else null
-            this.carAccessories = attributesPolicyJson.getJSONObject("car").has("accessories")
-            this.carFactoryOptions = attributesPolicyJson.getJSONObject("car").has("factoryOptions")
-            this.carPreviousInsuranceCoverType = if (attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").has("coverType")) attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").getString("coverType") else null
-            this.carPreviousInsuranceExpiryDate = if (attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").has("expiryDate")) attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").getString("expiryDate") else null
-            this.carPreviousInsuranceHasPreviousInsurance = if (attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").has("hasPreviousInsurance")) attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").getBoolean("hasPreviousInsurance") else null
-            this.carNoInsuranceReason = if (attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").has("noInsuranceReasonDescription")) attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").getString("noInsuranceReasonDescription") else null
-            this.carPurchaseDetailsIsRecentPurchase = if (attributesPolicyJson.getJSONObject("car").getJSONObject("purchaseDetails").has("isRecentPurchase")) attributesPolicyJson.getJSONObject("car").getJSONObject("purchaseDetails").getBoolean("isRecentPurchase") else null
-            this.carMake = if (attributesPolicyJson.getJSONObject("car").has("make")) attributesPolicyJson.getJSONObject("car").getString("make") else null
-            this.carModel = if (attributesPolicyJson.getJSONObject("car").has("model")) attributesPolicyJson.getJSONObject("car").getString("model") else null
-            this.carRegistrationYear = if (attributesPolicyJson.getJSONObject("car").has("registrationYear")) attributesPolicyJson.getJSONObject("car").getString("registrationYear") else null
-            this.carBodyModifications = attributesPolicyJson.getJSONObject("car").has("bodyModifications")
-            this.carOtherModifications = attributesPolicyJson.getJSONObject("car").has("otherModifications")
-            this.policyDetailsAdditionalExcessCode = if (attributesPolicyJson.getJSONObject("policyDetails").has("additionalExcessCode")) attributesPolicyJson.getJSONObject("policyDetails").getString("additionalExcessCode") else null
-            this.policyDetailsChoiceOfRepairer = if (attributesPolicyJson.getJSONObject("policyDetails").has("choiceOfRepairer")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("choiceOfRepairer") else null
-            this.policyDetailsCommencementDate = if (attributesPolicyJson.getJSONObject("policyDetails").has("commencementDate")) attributesPolicyJson.getJSONObject("policyDetails").getString("commencementDate") else null
-            this.policyDetailsCoverType = if (attributesPolicyJson.getJSONObject("policyDetails").has("coverType")) attributesPolicyJson.getJSONObject("policyDetails").getString("coverType") else null
-            this.policyDetailsHireCarOption = if (attributesPolicyJson.getJSONObject("policyDetails").has("hireCarOption")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("hireCarOption") else null
-            this.policyDetailsInstalmentplanNumber = if (attributesPolicyJson.getJSONObject("policyDetails").has("instalmentPlanNumber")) attributesPolicyJson.getJSONObject("policyDetails").getString("instalmentPlanNumber") else null
-            this.policyDetailsNoClaimsDiscount = if (attributesPolicyJson.getJSONObject("policyDetails").getJSONObject("noClaimsDiscount").has("type")) attributesPolicyJson.getJSONObject("policyDetails").getJSONObject("noClaimsDiscount").getString("type") else null
-            this.policyDetailsRoadsideOption = if (attributesPolicyJson.getJSONObject("policyDetails").has("roadsideOption")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("roadsideOption") else null
-            this.policyDetailsStampDutyExemption = if (attributesPolicyJson.getJSONObject("policyDetails").has("stampDutyExemption")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("stampDutyExemption") else null
-            this.policyDetailsWindscreenOption = if (attributesPolicyJson.getJSONObject("policyDetails").has("windscreenOption")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("windscreenOption") else null
-            this.policyDetailsNcdProtection = if (attributesPolicyJson.getJSONObject("policyDetails").has("ncdProtection")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("ncdProtection") else null
+            if(mapJson.has("attributes")) {
+                val attributesPolicyJson = JSONObject(mapJson.getString("attributes")).getJSONObject("policy")
+                this.riskAddressPostcode = attributesPolicyJson.getJSONObject("riskAddress").getString("postcode")
+                this.riskAddressState = if (attributesPolicyJson.getJSONObject("riskAddress").has("state")) attributesPolicyJson.getJSONObject("riskAddress").getString("state") else null
+                this.carParkingMethod = if (attributesPolicyJson.getJSONObject("car").has("carParkingMethod")) attributesPolicyJson.getJSONObject("car").getString("carParkingMethod") else null
+                this.carRedBookID = if (attributesPolicyJson.getJSONObject("car").has("redbookId")) attributesPolicyJson.getJSONObject("car").getString("redbookId") else null
+                this.carRegistrationNumber = if (attributesPolicyJson.getJSONObject("car").has("registrationYear")) attributesPolicyJson.getJSONObject("car").getString("registrationYear") else null
+                this.carUse = if (attributesPolicyJson.getJSONObject("car").has("use")) attributesPolicyJson.getJSONObject("car").getString("use") else null
+                this.carVehicleColour = if (attributesPolicyJson.getJSONObject("car").has("vehicleColour")) attributesPolicyJson.getJSONObject("car").getString("vehicleColour") else null
+                this.carVehicleCondition = if (attributesPolicyJson.getJSONObject("car").has("vehicleCondition")) attributesPolicyJson.getJSONObject("car").getString("vehicleCondition") else null
+                this.carVehicleFinanceType = if (attributesPolicyJson.getJSONObject("car").has("vehicleFinanceType")) attributesPolicyJson.getJSONObject("car").getString("vehicleFinanceType") else null
+                this.carAnnualMileage = if (attributesPolicyJson.getJSONObject("car").has("annualMileage")) attributesPolicyJson.getJSONObject("car").getString("annualMileage") else null
+                this.carAccessories = attributesPolicyJson.getJSONObject("car").has("accessories")
+                this.carFactoryOptions = attributesPolicyJson.getJSONObject("car").has("factoryOptions")
+                this.carPreviousInsuranceCoverType = if (attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").has("coverType")) attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").getString("coverType") else null
+                this.carPreviousInsuranceExpiryDate = if (attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").has("expiryDate")) attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").getString("expiryDate") else null
+                this.carPreviousInsuranceHasPreviousInsurance = if (attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").has("hasPreviousInsurance")) attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").getBoolean("hasPreviousInsurance") else null
+                this.carNoInsuranceReason = if (attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").has("noInsuranceReasonDescription")) attributesPolicyJson.getJSONObject("car").getJSONObject("previousInsurance").getString("noInsuranceReasonDescription") else null
+                this.carPurchaseDetailsIsRecentPurchase = if (attributesPolicyJson.getJSONObject("car").getJSONObject("purchaseDetails").has("isRecentPurchase")) attributesPolicyJson.getJSONObject("car").getJSONObject("purchaseDetails").getBoolean("isRecentPurchase") else null
+                this.carMake = if (attributesPolicyJson.getJSONObject("car").has("make")) attributesPolicyJson.getJSONObject("car").getString("make") else null
+                this.carModel = if (attributesPolicyJson.getJSONObject("car").has("model")) attributesPolicyJson.getJSONObject("car").getString("model") else null
+                this.carRegistrationYear = if (attributesPolicyJson.getJSONObject("car").has("registrationYear")) attributesPolicyJson.getJSONObject("car").getString("registrationYear") else null
+                this.carBodyModifications = attributesPolicyJson.getJSONObject("car").has("bodyModifications")
+                this.carOtherModifications = attributesPolicyJson.getJSONObject("car").has("otherModifications")
+                this.policyDetailsAdditionalExcessCode = if (attributesPolicyJson.getJSONObject("policyDetails").has("additionalExcessCode")) attributesPolicyJson.getJSONObject("policyDetails").getString("additionalExcessCode") else null
+                this.policyDetailsChoiceOfRepairer = if (attributesPolicyJson.getJSONObject("policyDetails").has("choiceOfRepairer")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("choiceOfRepairer") else null
+                this.policyDetailsCommencementDate = if (attributesPolicyJson.getJSONObject("policyDetails").has("commencementDate")) attributesPolicyJson.getJSONObject("policyDetails").getString("commencementDate") else null
+                this.policyDetailsCoverType = if (attributesPolicyJson.getJSONObject("policyDetails").has("coverType")) attributesPolicyJson.getJSONObject("policyDetails").getString("coverType") else null
+                this.policyDetailsHireCarOption = if (attributesPolicyJson.getJSONObject("policyDetails").has("hireCarOption")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("hireCarOption") else null
+                this.policyDetailsInstalmentplanNumber = if (attributesPolicyJson.getJSONObject("policyDetails").has("instalmentPlanNumber")) attributesPolicyJson.getJSONObject("policyDetails").getString("instalmentPlanNumber") else null
+                this.policyDetailsNoClaimsDiscount = if (attributesPolicyJson.getJSONObject("policyDetails").getJSONObject("noClaimsDiscount").has("type")) attributesPolicyJson.getJSONObject("policyDetails").getJSONObject("noClaimsDiscount").getString("type") else null
+                this.policyDetailsRoadsideOption = if (attributesPolicyJson.getJSONObject("policyDetails").has("roadsideOption")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("roadsideOption") else null
+                this.policyDetailsStampDutyExemption = if (attributesPolicyJson.getJSONObject("policyDetails").has("stampDutyExemption")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("stampDutyExemption") else null
+                this.policyDetailsWindscreenOption = if (attributesPolicyJson.getJSONObject("policyDetails").has("windscreenOption")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("windscreenOption") else null
+                this.policyDetailsNcdProtection = if (attributesPolicyJson.getJSONObject("policyDetails").has("ncdProtection")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("ncdProtection") else null
+            }
             //TODO This field is in MotorApplication table. this.salesChannel: String? = if(null
             //TODO This field is hardcoded value in code. this.InsuranceProductProductCode: String? = if(null,
             //TODO This field is hardcoded value in code. this.InsuranceProductProductGroup: String? = null,

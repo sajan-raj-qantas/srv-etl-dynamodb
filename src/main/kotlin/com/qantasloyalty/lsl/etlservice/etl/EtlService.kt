@@ -47,7 +47,7 @@ class EtlService @Autowired constructor(
 
             // Do the scan
             val scan = ScanRequest()
-                    .withTableName("avro-dev-integration-motorapplication-application-data")
+                    .withTableName("avro-dev-integration-motorapplication-application")
                     //.withFilterExpression()
                     .withLimit(10)
                     .withTotalSegments(threads + 1)

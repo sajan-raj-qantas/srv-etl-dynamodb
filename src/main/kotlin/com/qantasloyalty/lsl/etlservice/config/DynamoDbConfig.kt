@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.SaveBehavior
+import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -29,6 +30,11 @@ class DynamoDbConfig {
                 .withEndpointConfiguration(EndpointConfiguration(amazonDynamoDBEndpoint, null))
                 .withCredentials(accountCredentialsProvider)
                 .build()
+    }
+
+    @Bean
+    fun dynamoDb(): DynamoDB {
+        return DynamoDB(amazonDynamoDB())
     }
 
     //FIXME should we use aws-dynamodb-encryption-java or do our own encryption since it's only for one field?

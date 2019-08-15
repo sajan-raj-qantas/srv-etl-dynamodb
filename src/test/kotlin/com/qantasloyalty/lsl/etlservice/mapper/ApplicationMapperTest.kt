@@ -28,7 +28,7 @@ class ApplicationMapperTest {
 
     @Test
     fun testApplicationMapper() {
-        val item: Map<String, AttributeValue> = GetItemRequest("avro-dev-integration-motorapplication-application-data",
+        val item: Map<String, AttributeValue> = GetItemRequest("avro-dev-integration-motorapplication-application",
                 mapOf(
                         "applicationId" to AttributeValue("QM10TY43KB"),
                         "createdTimestamp" to AttributeValue("2019-08-12T16:45:29.999")
