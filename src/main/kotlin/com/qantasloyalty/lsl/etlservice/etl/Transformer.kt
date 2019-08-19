@@ -1,23 +1,18 @@
 package com.qantasloyalty.lsl.etlservice.etl
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB
-import com.amazonaws.services.dynamodbv2.document.BatchGetItemOutcome
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder
 import com.qantasloyalty.lsl.etlservice.mapper.ApplicationMapper
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.stream.Collectors
-import com.amazonaws.services.dynamodbv2.document.TableKeysAndAttributes
 import com.amazonaws.services.dynamodbv2.document.DynamoDB
 import com.amazonaws.services.dynamodbv2.model.*
 import com.qantasloyalty.lsl.etlservice.mapper.ApplicationDataDecryptor
 import com.qantasloyalty.lsl.etlservice.model.ApplicationData
 import com.qantasloyalty.lsl.etlservice.model.ApplicationDataKey
-import com.amazonaws.AmazonServiceException
 import com.amazonaws.services.dynamodbv2.model.BatchGetItemRequest
 import com.amazonaws.services.dynamodbv2.model.BatchGetItemResult
-import java.util.HashMap
 import com.amazonaws.services.dynamodbv2.model.KeysAndAttributes
 import com.amazonaws.services.dynamodbv2.model.AttributeValue
 
@@ -31,10 +26,12 @@ class Transformer(@Autowired var applicationMapper: ApplicationMapper,
     private val APPLICATION_DATA_TABLE_NAME = "avro-dev-integration-motorapplication-application-data"
 
     private val LOG = LoggerFactory.getLogger(object {}::class.java.`package`.name)
-    private val above90AppBuffer = ScanResultBuffer("above90AppBuffer", 2)
-    private val above90PartyBuffer = ScanResultBuffer("above90PartyBuffer", 2)
-    private val below90AppBuffer = ScanResultBuffer("below90AppBuffer", 2)
-    private val below90PartyBuffer = ScanResultBuffer("below90PartyBuffer", 2)
+    private val above90AppBuffer = ApplicationDataUploadOutputStream("above90AppBuffer", 2)
+    private val above90PartyBuffer = ApplicationDataUploadOutputStream("above90PartyBuffer", 2)
+    private val below90AppBuffer = ApplicationDataUploadOutputStream("below90AppBuffer", 2)
+    private val below90PartyBuffer = ApplicationDataUploadOutputStream("below90PartyBuffer", 2)
+
+    //private val below90AppBuffer = S3MultipartUploadOutputStream("below90AppBuffer","avro-file-transfer","etl/motor-outgoing-c2-below90.csv")
 
     fun transformScan(scanResult: ScanResult, processorType: TransformType) {
         when (processorType) {
@@ -66,7 +63,11 @@ class Transformer(@Autowired var applicationMapper: ApplicationMapper,
                 .collect(Collectors.toList())
         val batchGetItems: List<ApplicationData>? = batchGetItems(applicationDataKeys)
         println("BatchGetItems: $batchGetItems")
-       // pushToBuffer(scanResult, above90AppBuffer)
+        pushListToBuffer(batchGetItems, above90AppBuffer)
+    }
+
+    private fun pushListToBuffer(batchGetItems: List<ApplicationData>?, above90AppUploadOutputStream: ApplicationDataUploadOutputStream) {
+        batchGetItems?.forEach { above90AppUploadOutputStream.pushToBuffer(it) }
     }
 
     private fun batchGetItems(applicationKeys: MutableList<ApplicationDataKey>): List<ApplicationData>? {
@@ -89,66 +90,32 @@ class Transformer(@Autowired var applicationMapper: ApplicationMapper,
         return collect
     }
 
-    private fun pushToBuffer(scanResult: ScanResult, scanResultBuffer: ScanResultBuffer) {
-        scanResultBuffer.pushToBuffer(scanResult)
+  /*  private fun pushListToBuffer(applicationData: ApplicationData, uploadOutputStream: ApplicationDataUploadOutputStream) {
+        uploadOutputStream.pushToBuffer(uploadOutputStream)
+    }*/
+    private fun pushListToBuffer(scanResult: ScanResult, applicationDataUploadOutputStream: ApplicationDataUploadOutputStream) {
+       // applicationDataUploadOutputStream.pushToBuffer(scanResult)
     }
 
     private fun transformForAppBelow90(scanResult: ScanResult) {
         val applicationId = scanResult.items.get(0).get("applicationId")
         LOG.info("Transforming scanResult transformForAppBelow90: $applicationId")
-        pushToBuffer(scanResult, below90AppBuffer)
+        pushListToBuffer(scanResult, below90AppBuffer)
+        //below90AppBuffer.write()
     }
 
     private fun transformForPartyAbove90(scanResult: ScanResult) {
         val applicationId = scanResult.items.get(0).get("applicationId")
         LOG.info("Transforming scanResult transformForPartyBelow90: $applicationId")
-        pushToBuffer(scanResult, above90PartyBuffer)
+        pushListToBuffer(scanResult, above90PartyBuffer)
     }
 
     private fun transformForPartyBelow90(scanResult: ScanResult) {
         val applicationId = scanResult.items.get(0).get("applicationId")
         LOG.info("Transforming scanResult transformForPartyBelow90: $applicationId")
-        pushToBuffer(scanResult, below90PartyBuffer)
+        pushListToBuffer(scanResult, below90PartyBuffer)
     }
 
-    data class ScanResultBuffer(val name: String, val capacity: Int) {
-        //Pass s3 details here?
-        val buffer = HashSet<ScanResult>(capacity)
 
-        @Synchronized
-        fun pushToBuffer(scanResult: ScanResult) {
-            if (buffer.size > capacity) {
-                upload()
-                emptyBuffer()
-            }
-            push(scanResult)
-        }
-
-        @Synchronized
-        private fun push(scanResult: ScanResult) {
-            buffer.add(scanResult)
-        }
-
-        @Synchronized
-        fun emptyBuffer() {
-            buffer.clear()
-            println("Cleared contents of Buffer $name..")
-        }
-
-        @Synchronized
-        fun upload() {
-            println("Uploading contents of Buffer $name..")
-            for (scanResult in buffer) {
-                //TODO upload to S3
-                val tm = TransferManagerBuilder.standard()
-                        .withS3Client(null)
-                        .withMultipartUploadThreshold((5 * 1024 * 1025).toLong())
-                        .build()
-                //Upload using multipart
-                //tm.upload()
-            }
-
-        }
-    }
 
 }
