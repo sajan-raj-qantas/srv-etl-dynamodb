@@ -3,38 +3,22 @@ package com.qantasloyalty.lsl.etlservice.etl
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
 import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest
-import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.PartETag
 import com.amazonaws.services.s3.model.UploadPartRequest
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder
-import com.amazonaws.services.s3.transfer.Upload
-import com.qantasloyalty.lsl.etlservice.model.ApplicationData
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import java.util.ArrayList
-import kotlin.text.Typography.tm
-import com.amazonaws.services.s3.model.UploadPartResult
 import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest
-
-
-
-
 
 class S3MultipartUploadOutputStream(
         val bucket: String,
         val objectId: String,
-        val maxPartSize: Int = 4096
+        val maxPartSize: Int = 5 * 1024 * 1024 + 1 // 5 MB
 ) : OutputStream() {
-
 
     val s3Client = AmazonS3ClientBuilder.standard()
             .withCredentials(DefaultAWSCredentialsProviderChain())
             .build()
-
-//    val tm = TransferManagerBuilder.standard()
-//            .withS3Client(s3Client)
-//            .build()
 
     val partETags = ArrayList<PartETag>()
 
@@ -86,19 +70,9 @@ class S3MultipartUploadOutputStream(
                 .withPartNumber(multipartNumber + 1)
                 .withInputStream(ByteArrayInputStream(buffer, 0, multipartIndex))
                 .withPartSize(multipartIndex.toLong())
-                .withFileOffset((fileIndex - multipartIndex).toLong())
-//                .withObjectMetadata(objectMetaData)
-
+        println("Uploading part ${multipartNumber + 1}...")
         val uploadResult = s3Client.uploadPart(uploadRequest)
+        println("Uploaded part ${multipartNumber + 1}")
         partETags.add(uploadResult.partETag)
-//        val upload = tm.upload(bucket, objectId, ByteArrayInputStream(buffer), ObjectMetadata().apply {
-//            contentLength = multipartIndex.toLong()
-//        })
-
-//        upload.waitForUploadResult()
-        // Upload the part and add the response's ETag to our list.
-//        val uploadResult = s3Client.uploadPart(uploadRequest)
-
-//        partETags.add(uploadResult.partETag)
     }
 }
