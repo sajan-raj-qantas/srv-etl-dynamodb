@@ -5,7 +5,7 @@ import org.junit.Before
 import org.junit.Test
 import java.io.File
 
-internal class S3MultipartUploadOutputStreamTest {
+internal class S3MultipartUploadBufferedOutputStreamTest {
     val fileName = "mock-data-100000.csv"
 
     @Before
@@ -27,7 +27,7 @@ internal class S3MultipartUploadOutputStreamTest {
         val bucketName = "avro-file-transfer"
         val keyName = "etl/multipart-test.csv"
 
-        val outputStream = S3MultipartUploadOutputStream(
+        val outputStream = S3MultipartUploadBufferedOutputStream(
                 bucketName,
                 keyName
         )

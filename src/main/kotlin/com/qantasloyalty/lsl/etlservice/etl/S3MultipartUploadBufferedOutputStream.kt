@@ -10,7 +10,7 @@ import java.io.OutputStream
 import java.util.ArrayList
 import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest
 
-class S3MultipartUploadOutputStream(
+class S3MultipartUploadBufferedOutputStream(
         val bucket: String,
         val objectId: String,
         val maxPartSize: Int = 5 * 1024 * 1024 + 1 // 5 MB

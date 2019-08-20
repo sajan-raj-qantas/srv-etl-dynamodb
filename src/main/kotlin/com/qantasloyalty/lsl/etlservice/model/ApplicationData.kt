@@ -67,26 +67,52 @@ class ApplicationData {
 
         try {
 
-            if(mapJson.has("attributes")) {
-                val attributesPolicyJson = JSONObject(mapJson.getString("attributes")).getJSONObject("policy")
-                this.riskAddressPostcode = attributesPolicyJson.getJSONObject("riskAddress").getString("postcode")
-                this.policyDetailsNcdProtection = if (attributesPolicyJson.getJSONObject("policyDetails").has("ncdProtection")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("ncdProtection") else null
+            if (mapJson.has("attributes")) {
+                if(JSONObject(mapJson.getString("attributes")).has("policy")) {
+                    val attributesPolicyJson = JSONObject(mapJson.getString("attributes")).getJSONObject("policy")
+                    this.riskAddressPostcode =
+                            if (attributesPolicyJson.getJSONObject("riskAddress").has("postcode"))
+                                attributesPolicyJson.getJSONObject("riskAddress").getString("postcode") else null
+                    if(attributesPolicyJson.has("policyDetails")) {
+                        this.policyDetailsNcdProtection = if (attributesPolicyJson.getJSONObject("policyDetails").has("ncdProtection")) attributesPolicyJson.getJSONObject("policyDetails").getBoolean("ncdProtection") else null
+                    }
+                }
             }
             //TODO This field is in MotorApplication table. this.salesChannel: String? = if(null
             //TODO This field is hardcoded value in code. this.InsuranceProductProductCode: String? = if(null,
             //TODO This field is hardcoded value in code. this.InsuranceProductProductGroup: String? = null,
             if (mapJson.has("pricing")) {
                 val pricingJson = JSONObject(mapJson.getString("pricing"))
-                this.pricingMonthlyAmountPayable = getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("amountPayable")
-                this.pricingMonthlyCanBuyOnline = getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getBoolean("canBuyOnline")
-                this.pricingMonthlyFirstPayment = getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("firstPayment")
-                this.pricingMonthlySubsequentPayment = getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("subsequentPayment")
-                this.pricingMonthlyTotalPremium = getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("totalPremium")
-                this.pricingMonthlyUnderwritingResults = getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("underwritingResult")
-                this.pricingYearlyAmountPayable = getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.getString("amountPayable")
-                this.pricingYearlyCanBuyOnline = getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.getBoolean("canBuyOnline")
-                this.pricingYearlyTotalPremium = getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.getString("totalPremium")
-                this.pricingYearlyUnderwritingResults = getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.getString("underwritingResult")
+                this.pricingMonthlyAmountPayable =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.has("amountPayable")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("amountPayable") else null
+                this.pricingMonthlyCanBuyOnline =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.has("canBuyOnline")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getBoolean("canBuyOnline") else null
+                this.pricingMonthlyFirstPayment =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.has("firstPayment")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("firstPayment") else null
+                this.pricingMonthlySubsequentPayment =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.has("subsequentPayment")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("subsequentPayment") else null
+                this.pricingMonthlyTotalPremium =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.has("totalPremium")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("totalPremium") else null
+                this.pricingMonthlyUnderwritingResults =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.has("underwritingResult")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.MONTHLY_PAYMENT)?.getString("underwritingResult") else null
+                this.pricingYearlyAmountPayable =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.has("amountPayable")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.getString("amountPayable") else null
+                this.pricingYearlyCanBuyOnline =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.has("canBuyOnline")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.getBoolean("canBuyOnline") else null
+                this.pricingYearlyTotalPremium =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.has("totalPremium")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.getString("totalPremium") else null
+                this.pricingYearlyUnderwritingResults =
+                        if (getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.has("underwritingResult")!!)
+                            getPricing(pricingJson, InstalmentPlanNumber.ANNUAL_PAYMENT)?.getString("underwritingResult") else null
             }
             //TODO Populate this to true if either of convictions, suspensions , cancellations and maxdemerits is true. this.underwritingKnockOut: Boolean? = null,
             //TODO This field is in MotorApplication table. this.applicationStatus: String? = null,
@@ -94,12 +120,12 @@ class ApplicationData {
             //TODO We need time when we last updated the motor application which is in MororApplication table.this.applicationLastModifiedDate: LocalDate,
             //TODO This field is in MotorApplication table this.lastPricingDate: LocalDate,
             //TODO Unable to locate this field in DB this.paymentType: String? = null
-        } catch (e: JSONException) {
-            println("Parsing error: ${e.message}")
+        } catch (e: Exception) {
+            println("Parsing error for application:$applicationId : ${e.message}")
+            e.printStackTrace()
         }
         return this
     }
-
 
 
     fun fromApplicationDataMap(map: MutableMap<String, Any?>): ApplicationData {
@@ -109,7 +135,7 @@ class ApplicationData {
 
 
         try {
-            if(mapJson.has("attributes")) {
+            if (mapJson.has("attributes")) {
                 val attributesPolicyJson = JSONObject(mapJson.getString("attributes")).getJSONObject("policy")
                 this.riskAddressPostcode = attributesPolicyJson.getJSONObject("riskAddress").getString("postcode")
                 this.riskAddressState = if (attributesPolicyJson.getJSONObject("riskAddress").has("state")) attributesPolicyJson.getJSONObject("riskAddress").getString("state") else null
@@ -175,11 +201,13 @@ class ApplicationData {
 
     private fun getPricing(pricingJson: JSONObject, instalmentPlanNumber: InstalmentPlanNumber): JSONObject? {
         var price: JSONObject? = null
-        val pricesArray = pricingJson.getJSONObject("details").getJSONArray("prices")
-        for (i in 0 until pricesArray.length()) {
-            val price = pricesArray.getJSONObject(i)
-            if (instalmentPlanNumber.toString().equals(price.getString("instalmentPlanNumber"))) {
-                return price
+        if(pricingJson.has("details")) {
+            val pricesArray = pricingJson.getJSONObject("details").getJSONArray("prices")
+            for (i in 0 until pricesArray.length()) {
+                val price = pricesArray.getJSONObject(i)
+                if (instalmentPlanNumber.toString().equals(price.getString("instalmentPlanNumber"))) {
+                    return price
+                }
             }
         }
         return price
@@ -189,10 +217,9 @@ class ApplicationData {
         return "ApplicationData(applicationId=$applicationId, riskAddressPostcode=$riskAddressPostcode, riskAddressState=$riskAddressState, carParkingMethod=$carParkingMethod, carRedBookID=$carRedBookID, carRegistrationNumber=$carRegistrationNumber, carUse=$carUse, carVehicleColour=$carVehicleColour, carVehicleCondition=$carVehicleCondition, carVehicleFinanceType=$carVehicleFinanceType, carAnnualMileage=$carAnnualMileage, carAccessories=$carAccessories, carFactoryOptions=$carFactoryOptions, carPreviousInsuranceCoverType=$carPreviousInsuranceCoverType, carPreviousInsuranceExpiryDate=$carPreviousInsuranceExpiryDate, carPreviousInsuranceHasPreviousInsurance=$carPreviousInsuranceHasPreviousInsurance, carNoInsuranceReason=$carNoInsuranceReason, carPurchaseDetailsIsRecentPurchase=$carPurchaseDetailsIsRecentPurchase, carMake=$carMake, carModel=$carModel, carRegistrationYear=$carRegistrationYear, carBodyModifications=$carBodyModifications, carOtherModifications=$carOtherModifications, policyDetailsAdditionalExcessCode=$policyDetailsAdditionalExcessCode, policyDetailsChoiceOfRepairer=$policyDetailsChoiceOfRepairer, policyDetailsCommencementDate=$policyDetailsCommencementDate, policyDetailsCoverType=$policyDetailsCoverType, policyDetailsHireCarOption=$policyDetailsHireCarOption, policyDetailsInstalmentplanNumber=$policyDetailsInstalmentplanNumber, policyDetailsNoClaimsDiscount=$policyDetailsNoClaimsDiscount, policyDetailsRoadsideOption=$policyDetailsRoadsideOption, policyDetailsStampDutyExemption=$policyDetailsStampDutyExemption, policyDetailsWindscreenOption=$policyDetailsWindscreenOption, policyDetailsNcdProtection=$policyDetailsNcdProtection, salesChannel=$salesChannel, InsuranceProductProductCode=$InsuranceProductProductCode, InsuranceProductProductGroup=$InsuranceProductProductGroup, pricingMonthlyAmountPayable=$pricingMonthlyAmountPayable, pricingMonthlyCanBuyOnline=$pricingMonthlyCanBuyOnline, pricingMonthlyFirstPayment=$pricingMonthlyFirstPayment, pricingMonthlySubsequentPayment=$pricingMonthlySubsequentPayment, pricingMonthlyTotalPremium=$pricingMonthlyTotalPremium, pricingMonthlyUnderwritingResults=$pricingMonthlyUnderwritingResults, pricingYearlyAmountPayable=$pricingYearlyAmountPayable, pricingYearlyCanBuyOnline=$pricingYearlyCanBuyOnline, pricingYearlyTotalPremium=$pricingYearlyTotalPremium, pricingYearlyUnderwritingResults=$pricingYearlyUnderwritingResults, underwritingKnockOut=$underwritingKnockOut, applicationStatus=$applicationStatus, applicationStartDate=$applicationStartDate, applicationLastModifiedDate=$applicationLastModifiedDate, lastPricingDate=$lastPricingDate, paymentType=$paymentType)"
     }
 
-     fun toCsvString(): String {
+    fun toCsvString(): String {
         return "$applicationId, $riskAddressPostcode, $riskAddressState, $carParkingMethod, $carRedBookID, $carRegistrationNumber, $carUse, $carVehicleColour, $carVehicleCondition, $carVehicleFinanceType, $carAnnualMileage, $carAccessories, $carFactoryOptions, $carPreviousInsuranceCoverType, $carPreviousInsuranceExpiryDate, $carPreviousInsuranceHasPreviousInsurance, $carNoInsuranceReason, $carPurchaseDetailsIsRecentPurchase, $carMake, $carModel, $carRegistrationYear, $carBodyModifications, $carOtherModifications, $policyDetailsAdditionalExcessCode, $policyDetailsChoiceOfRepairer, $policyDetailsCommencementDate, $policyDetailsCoverType, $policyDetailsHireCarOption, $policyDetailsInstalmentplanNumber, $policyDetailsNoClaimsDiscount, $policyDetailsRoadsideOption, $policyDetailsStampDutyExemption, $policyDetailsWindscreenOption, $policyDetailsNcdProtection, $salesChannel, $InsuranceProductProductCode, $InsuranceProductProductGroup, $pricingMonthlyAmountPayable, $pricingMonthlyCanBuyOnline, $pricingMonthlyFirstPayment, $pricingMonthlySubsequentPayment, $pricingMonthlyTotalPremium, $pricingMonthlyUnderwritingResults, $pricingYearlyAmountPayable, $pricingYearlyCanBuyOnline, $pricingYearlyTotalPremium, $pricingYearlyUnderwritingResults, $underwritingKnockOut, $applicationStatus, $applicationStartDate, $applicationLastModifiedDate, $lastPricingDate, $paymentType"
     }
-
 
 
     private enum class InstalmentPlanNumber {

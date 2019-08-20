@@ -13,10 +13,10 @@ class ApplicationMapper(@Autowired val decryptor: ApplicationDataDecryptor,
 
     fun fromAttributeValues(attributesMap: Map<String, AttributeValue>): ApplicationData {
 
-       //val decrypt = decryptor.decrypt(attributesMap)
-       //println("After Decrypt: $decrypt")
-        val transformedMap = transform(attributesMap)
-        println("Transformed Application Data Map: $transformedMap")
+       val decrypt = decryptor.decrypt(attributesMap)
+      //println("After Decrypt applicationId${attributesMap.get("applicationId")}: $decrypt")
+        val transformedMap = transform(decrypt)
+       // println("Transformed Application Data Map: $transformedMap")
         return ApplicationData().fromApplicationMap(transformedMap)
       //  return ApplicationData(decrypt)
     }

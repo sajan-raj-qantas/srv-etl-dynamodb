@@ -8,29 +8,39 @@ import com.amazonaws.services.dynamodbv2.datamodeling.encryption.providers.Direc
 import com.amazonaws.services.dynamodbv2.model.AttributeValue
 import com.amazonaws.services.kms.AWSKMSClientBuilder
 import org.springframework.stereotype.Component
+import java.lang.Exception
 
 @Component
 class ApplicationDataDecryptor {
-        val credentialsProvider = DefaultAWSCredentialsProviderChain()
-        val kms = AWSKMSClientBuilder
-                .standard()
-                .withCredentials(credentialsProvider)
-                .build()
+    val credentialsProvider = DefaultAWSCredentialsProviderChain()
+    val kms = AWSKMSClientBuilder
+            .standard()
+            .withCredentials(credentialsProvider)
+            .build()
 
-        val materialsProvider = DirectKmsMaterialProvider(kms, null)
-        val encryptor = DynamoDBEncryptor.getInstance(materialsProvider)
+    val materialsProvider = DirectKmsMaterialProvider(kms, null)
+    val encryptor = DynamoDBEncryptor.getInstance(materialsProvider)
 
-        val encryptionContext = EncryptionContext.Builder()
-                .withTableName("avro-dev-integration-motorapplication-application-data")
-                .withHashKeyName("applicationId")
-                .withRangeKeyName("createdTimestamp")
-                .build()
+    val encryptionContext = EncryptionContext.Builder()
+            .withTableName("avro-dev-integration-motorapplication-application-data")
+            .withHashKeyName("applicationId")
+            .withRangeKeyName("createdTimestamp")
+            .build()
 
-        val attributeFlags: Map<String, Set<EncryptionFlags>> = mapOf(
-                "attributes" to setOf(EncryptionFlags.ENCRYPT, EncryptionFlags.SIGN)
-        )
+    val attributeFlags: Map<String, Set<EncryptionFlags>> = mapOf(
+            "attributes" to setOf(EncryptionFlags.ENCRYPT, EncryptionFlags.SIGN)
+    )
 
     fun decrypt(item: Map<String, AttributeValue>): Map<String, AttributeValue> {
-        return encryptor.decryptRecord(item, attributeFlags, encryptionContext)
+        if (item.containsKey("attributes") && item.get("attributes")?.s == null) {
+            //println("Decrypting attributes for application ${item.get("applicationId")} -  ${item.get("attributes")}")
+            try {
+                return encryptor.decryptRecord(item, attributeFlags, encryptionContext)
+            } catch (e:Exception) {
+                println("Error on decrypting application: ${item.get("applicationId")}: ${e.message}")
+                println("Attributes = ${item.get("attributes")}")
+            }
+        }
+        return item
     }
 }
