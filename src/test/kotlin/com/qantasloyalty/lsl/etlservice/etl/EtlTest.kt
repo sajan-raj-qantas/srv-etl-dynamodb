@@ -5,15 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class EtlServiceTest {
+class EtlTest {
 
 	@Autowired
-	private lateinit var etlService: EtlService
+	private lateinit var etl: Etl
 
 	@Test
-	fun testEtlService() {
-		etlService.doEtl(3)
-		//Thread.sleep(10000)
+	fun testEtl() {
+		etl.doEtl(3)
 	}
 
 }

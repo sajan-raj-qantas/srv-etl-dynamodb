@@ -15,6 +15,7 @@ import com.amazonaws.services.dynamodbv2.model.BatchGetItemRequest
 import com.amazonaws.services.dynamodbv2.model.BatchGetItemResult
 import com.amazonaws.services.dynamodbv2.model.KeysAndAttributes
 import com.amazonaws.services.dynamodbv2.model.AttributeValue
+import com.google.common.collect.Lists
 
 
 @Component
@@ -50,16 +51,16 @@ class Transformer(@Autowired var applicationMapper: ApplicationMapper,
                 .map { ApplicationDataKey(it.applicationId, it.lastDataCreatedTimestamp) }
                 .collect(Collectors.toList())
         val applicationDataList: List<ApplicationData>? = batchGetItems(applicationDataKeys)
-        println("BatchGetItems: $applicationDataList")
+        //println("ApplicationDataList: $applicationDataList")
 
         when (processorType) {
             TransformType.BELOW_90 -> {
-                transformForAppBelow90(applicationDataList)
-                transformForPartyBelow90(applicationDataList)
+                // transformForAppBelow90(applicationDataList)
+                // transformForPartyBelow90(applicationDataList)
             }
 
             TransformType.ABOVE_90 -> {
-                transformForAppAbove90(applicationDataList)
+                //transformForAppAbove90(applicationDataList)
                 transformForPartyAbove90(applicationDataList)
             }
         }
@@ -73,34 +74,50 @@ class Transformer(@Autowired var applicationMapper: ApplicationMapper,
         pushListToBuffer(applicationDataList, below90AppStream)
     }
 
-    private fun transformForPartyAbove90(scanResult: List<ApplicationData>?) {
-        pushListToBuffer(scanResult, above90PartyStream)
+    private fun transformForPartyAbove90(applicationDataList: List<ApplicationData>?) {
+        pushListToBuffer(applicationDataList, above90PartyStream)
     }
 
-    private fun transformForPartyBelow90(scanResult: List<ApplicationData>?) {
-        pushListToBuffer(scanResult, below90PartyStream)
+    private fun transformForPartyBelow90(applicationDataList: List<ApplicationData>?) {
+        pushListToBuffer(applicationDataList, below90PartyStream)
     }
 
-    private fun pushListToBuffer(batchGetItems: List<ApplicationData>?, above90AppUploadOutputStream: S3MultipartUploadBufferedOutputStream) {
-        batchGetItems?.forEach { above90AppUploadOutputStream.write(it.toCsvString().toByteArray()) }
+    private fun pushListToBuffer(batchGetItems: List<ApplicationData>?, uploadOutputStream: S3MultipartUploadBufferedOutputStream) {
+        println("Pushing ${batchGetItems?.size} items to buffer")
+        batchGetItems?.forEach {
+            val bytes = it.toCsvString().toByteArray()
+            //println(bytes)
+            uploadOutputStream.write(bytes)
+        }
     }
 
     private fun batchGetItems(applicationKeys: MutableList<ApplicationDataKey>): List<ApplicationData>? {
-        val request = BatchGetItemRequest().addRequestItemsEntry(APPLICATION_DATA_TABLE_NAME, KeysAndAttributes())
-        applicationKeys.forEach {
-            val keysAndAttributes: KeysAndAttributes? = request.requestItems.get(APPLICATION_DATA_TABLE_NAME)
-            //keysAndAttributes?.withKeys("applicationId:${it.applicationId}")
-            keysAndAttributes?.withKeys(
-                    mapOf(
-                            "applicationId" to AttributeValue(it.applicationId),
-                            "createdTimestamp" to AttributeValue(it.lastDataCreatedTimestamp)
-                    )
-            )
+        var items = ArrayList<MutableMap<String, AttributeValue>>()
+        val choppedLists = Lists.partition(applicationKeys, 100)
+        println("Preparing ${choppedLists.size} BatchGETRequest(s) for ${applicationKeys.size} applications")
+        choppedLists.forEach {
+            val request = BatchGetItemRequest().addRequestItemsEntry(APPLICATION_DATA_TABLE_NAME, KeysAndAttributes())
+            it.forEach {
+                val keysAndAttributes: KeysAndAttributes? = request.requestItems.get(APPLICATION_DATA_TABLE_NAME)
+                //keysAndAttributes?.withKeys("applicationId:${it.applicationId}")
+                keysAndAttributes?.withKeys(
+                        mapOf(
+                                "applicationId" to AttributeValue(it.applicationId),
+                                "createdTimestamp" to AttributeValue(it.lastDataCreatedTimestamp)
+                        )
+                )
+            }
+            val batchGetItemResult: BatchGetItemResult = awsdynamoDB.batchGetItem(request)
+            val mutableList = batchGetItemResult.responses.get(APPLICATION_DATA_TABLE_NAME)
+            if (mutableList != null) {
+                items.addAll(mutableList)
+                //println("Got Batch Get Response for ${it.size} applications")
+            }
         }
-        val batchGetItemResult: BatchGetItemResult = awsdynamoDB.batchGetItem(request)
-        val items: List<MutableMap<String, AttributeValue>>? = batchGetItemResult.responses.get(APPLICATION_DATA_TABLE_NAME)
-        println("BatchGetResponse: $items")
+
+        println("Got All Batch Get Responses for ${items.size} applications")
         val collect: List<ApplicationData>? = items?.stream()?.map(applicationMapper::fromAttributeValues)?.collect(Collectors.toList())
+        println("Mapped ${items.size} items")
         return collect
     }
 

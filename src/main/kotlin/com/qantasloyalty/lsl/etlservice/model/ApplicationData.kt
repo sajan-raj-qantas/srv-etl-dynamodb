@@ -122,7 +122,7 @@ class ApplicationData {
             //TODO Unable to locate this field in DB this.paymentType: String? = null
         } catch (e: Exception) {
             println("Parsing error for application:$applicationId : ${e.message}")
-            e.printStackTrace()
+            //e.printStackTrace()
         }
         return this
     }

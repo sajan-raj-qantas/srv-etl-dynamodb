@@ -65,7 +65,7 @@ class EtlService @Autowired constructor(
             if (permitsToConsume <= 0) {
                 permitsToConsume = 1
             }
-            println("Read result -$result")
+           // println("Read result -$result")
             channel.send(ScanResultWrapper(id, iterations, result))
             //Stream.generate { result }
 
@@ -86,16 +86,16 @@ class EtlService @Autowired constructor(
         jobs += launch {
             receiveChannel.consumeEach {
                 println("${it.segment}:: ${it.iteration} - Got ${it.scanResult.count} items:: ${it.scanResult.lastEvaluatedKey}")
-                below90.send(it)
+               // below90.send(it)
                 above90.send(it)
             }
         }
 
-        jobs += launch {
+       /* jobs += launch {
             below90.consumeEach {
                 doForBelow90(it)
             }
-        }
+        }*/
 
         jobs += launch {
             above90.consumeEach {
