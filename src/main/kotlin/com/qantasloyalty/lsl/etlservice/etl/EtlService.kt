@@ -49,7 +49,7 @@ class EtlService @Autowired constructor(
             val scan = ScanRequest()
                     .withTableName("avro-dev-integration-motorapplication-application")
                     //.withFilterExpression()
-                    //.withLimit(100)
+                    .withLimit(100)
                     .withTotalSegments(threads + 1)
                     .withSegment(id)
                     .withReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL)
@@ -71,7 +71,11 @@ class EtlService @Autowired constructor(
 
             iterations = iterations.inc()
             println("id $id on iteration $iterations")
-        } while (exclusiveStartKey != null && iterations < 20)
+        } while (exclusiveStartKey != null && iterations < 10 && !channel.isClosedForSend)
+
+        channel.close()
+        println("###Closed Send channel###")
+
 
     }
 

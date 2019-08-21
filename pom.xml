@@ -92,6 +92,12 @@
             <artifactId>lombok</artifactId>
             <version>1.18.8</version>
         </dependency>
+
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>LATEST</version>
+		</dependency>
 		<!--<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-stdlib</artifactId>

@@ -1,6 +1,5 @@
 package com.qantasloyalty.lsl.etlservice.model
 
-import com.amazonaws.services.dynamodbv2.document.Item
 import org.json.JSONException
 import org.json.JSONObject
 import java.time.LocalDate

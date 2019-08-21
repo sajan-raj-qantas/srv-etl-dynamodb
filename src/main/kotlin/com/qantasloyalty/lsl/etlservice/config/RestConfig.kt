@@ -23,9 +23,12 @@ class RestConfig {
                 //.registerModule(KotlinModule())*/
         return jacksonObjectMapper()
                 .apply {
+                    setSerializationInclusion(JsonInclude.Include.NON_NULL)
                     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                     disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                     setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                    enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
+                    configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES,true)
                    // registerModules(JavaTimeModule(), ParameterNamesModule())
                 }
     }

@@ -1,6 +1,7 @@
 package com.qantasloyalty.lsl.etlservice.etl
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB
+import com.amazonaws.services.dynamodbv2.document.BatchGetItemOutcome
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import com.qantasloyalty.lsl.etlservice.mapper.ApplicationMapper
@@ -16,13 +17,16 @@ import com.amazonaws.services.dynamodbv2.model.BatchGetItemResult
 import com.amazonaws.services.dynamodbv2.model.KeysAndAttributes
 import com.amazonaws.services.dynamodbv2.model.AttributeValue
 import com.google.common.collect.Lists
-
+import com.qantasloyalty.lsl.etlservice.model.ApplicationDataNew
+import kotlin.system.measureTimeMillis
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.ForkJoinPool
 
 @Component
 class Transformer(@Autowired var applicationMapper: ApplicationMapper,
                   @Autowired var dynamoDB: DynamoDB,
                   @Autowired var awsdynamoDB: AmazonDynamoDB,
-                  @Autowired var decryptor: ApplicationDataDecryptor) {
+                  @Autowired var batchRetriever: BatchRetriever) {
 
     private val APPLICATION_DATA_TABLE_NAME = "avro-dev-integration-motorapplication-application-data"
 
@@ -50,75 +54,46 @@ class Transformer(@Autowired var applicationMapper: ApplicationMapper,
         val applicationDataKeys = applicationList.stream()
                 .map { ApplicationDataKey(it.applicationId, it.lastDataCreatedTimestamp) }
                 .collect(Collectors.toList())
-        val applicationDataList: List<ApplicationData>? = batchGetItems(applicationDataKeys)
+
+        val applicationDataList: List<ApplicationDataNew>? = batchRetriever.batchGetItems(applicationDataKeys)
         //println("ApplicationDataList: $applicationDataList")
 
         when (processorType) {
             TransformType.BELOW_90 -> {
-                // transformForAppBelow90(applicationDataList)
-                // transformForPartyBelow90(applicationDataList)
+                transformForAppBelow90(applicationDataList)
+                transformForPartyBelow90(applicationDataList)
             }
 
             TransformType.ABOVE_90 -> {
-                //transformForAppAbove90(applicationDataList)
+                transformForAppAbove90(applicationDataList)
                 transformForPartyAbove90(applicationDataList)
             }
         }
     }
 
-    private fun transformForAppAbove90(applicationDataList: List<ApplicationData>?) {
+    private fun transformForAppAbove90(applicationDataList: List<ApplicationDataNew>?) {
         pushListToBuffer(applicationDataList, above90AppStream)
     }
 
-    private fun transformForAppBelow90(applicationDataList: List<ApplicationData>?) {
-        pushListToBuffer(applicationDataList, below90AppStream)
+    private fun transformForAppBelow90(applicationDataList: List<ApplicationDataNew>?) {
+        //pushListToBuffer(applicationDataList, below90AppStream)
     }
 
-    private fun transformForPartyAbove90(applicationDataList: List<ApplicationData>?) {
-        pushListToBuffer(applicationDataList, above90PartyStream)
+    private fun transformForPartyAbove90(applicationDataList: List<ApplicationDataNew>?) {
+        //pushListToBuffer(applicationDataList, above90PartyStream)
     }
 
-    private fun transformForPartyBelow90(applicationDataList: List<ApplicationData>?) {
-        pushListToBuffer(applicationDataList, below90PartyStream)
+    private fun transformForPartyBelow90(applicationDataList: List<ApplicationDataNew>?) {
+        //pushListToBuffer(applicationDataList, below90PartyStream)
     }
 
-    private fun pushListToBuffer(batchGetItems: List<ApplicationData>?, uploadOutputStream: S3MultipartUploadBufferedOutputStream) {
+    private fun pushListToBuffer(batchGetItems: List<ApplicationDataNew>?, uploadOutputStream: S3MultipartUploadBufferedOutputStream) {
         println("Pushing ${batchGetItems?.size} items to buffer")
         batchGetItems?.forEach {
             val bytes = it.toCsvString().toByteArray()
-            //println(bytes)
             uploadOutputStream.write(bytes)
         }
     }
-
-    private fun batchGetItems(applicationKeys: MutableList<ApplicationDataKey>): List<ApplicationData>? {
-        var items = ArrayList<MutableMap<String, AttributeValue>>()
-        val choppedLists = Lists.partition(applicationKeys, 100)
-        println("Preparing ${choppedLists.size} BatchGETRequest(s) for ${applicationKeys.size} applications")
-        choppedLists.forEach {
-            val request = BatchGetItemRequest().addRequestItemsEntry(APPLICATION_DATA_TABLE_NAME, KeysAndAttributes())
-            it.forEach {
-                val keysAndAttributes: KeysAndAttributes? = request.requestItems.get(APPLICATION_DATA_TABLE_NAME)
-                //keysAndAttributes?.withKeys("applicationId:${it.applicationId}")
-                keysAndAttributes?.withKeys(
-                        mapOf(
-                                "applicationId" to AttributeValue(it.applicationId),
-                                "createdTimestamp" to AttributeValue(it.lastDataCreatedTimestamp)
-                        )
-                )
-            }
-            val batchGetItemResult: BatchGetItemResult = awsdynamoDB.batchGetItem(request)
-            val mutableList = batchGetItemResult.responses.get(APPLICATION_DATA_TABLE_NAME)
-            if (mutableList != null) {
-                items.addAll(mutableList)
-                //println("Got Batch Get Response for ${it.size} applications")
-            }
-        }
-
-        println("Got All Batch Get Responses for ${items.size} applications")
-        val collect: List<ApplicationData>? = items?.stream()?.map(applicationMapper::fromAttributeValues)?.collect(Collectors.toList())
-        println("Mapped ${items.size} items")
-        return collect
-    }
-
 }
+
+
