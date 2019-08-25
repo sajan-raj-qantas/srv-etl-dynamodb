@@ -2,18 +2,19 @@ package com.qantasloyalty.lsl.etlservice.etl
 
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
 import com.amazonaws.services.s3.AmazonS3ClientBuilder
+import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest
 import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest
 import com.amazonaws.services.s3.model.PartETag
 import com.amazonaws.services.s3.model.UploadPartRequest
 import java.io.ByteArrayInputStream
 import java.io.OutputStream
-import java.util.ArrayList
-import com.amazonaws.services.s3.model.CompleteMultipartUploadRequest
+import java.util.*
 
 class S3MultipartUploadBufferedOutputStream(
+        val id:String,
         val bucket: String,
         val objectId: String,
-        val maxPartSize: Int = 1 * 1024 * 1024 + 1 // 5 MB
+        val maxPartSize: Int = 5 * 1024 * 1024 + 1 // 5 MB
 ) : OutputStream() {
 
     val s3Client = AmazonS3ClientBuilder.standard()
@@ -53,15 +54,17 @@ class S3MultipartUploadBufferedOutputStream(
     }
 
     override fun close() {
+        println("stream close() invoked for $id")
         if(multipartIndex!=0){
             uploadPart()
         }
         val compRequest = CompleteMultipartUploadRequest(bucket, objectId, initResponse.uploadId, partETags)
         s3Client.completeMultipartUpload(compRequest)
+        println("***Completed multipart upload $id***")
     }
 
     private fun uploadPart() {
-        //println("Uploading part ${multipartNumber + 1}...")
+        println("$id::Uploading part ${multipartNumber + 1}...")
         if (multipartIndex == 0) {
             return
         }
@@ -75,7 +78,7 @@ class S3MultipartUploadBufferedOutputStream(
                 .withPartSize(multipartIndex.toLong())
 
         val uploadResult = s3Client.uploadPart(uploadRequest)
-        println("Uploaded part ${multipartNumber + 1}")
+        println("$id::Uploaded part ${multipartNumber + 1}")
         partETags.add(uploadResult.partETag)
 
         multipartIndex = 0

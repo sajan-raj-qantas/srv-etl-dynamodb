@@ -131,8 +131,6 @@ class ApplicationData {
         var mapJson = JSONObject(map)
         this.applicationId = mapJson.getString("applicationId")
 
-
-
         try {
             if (mapJson.has("attributes")) {
                 val attributesPolicyJson = JSONObject(mapJson.getString("attributes")).getJSONObject("policy")
@@ -220,10 +218,8 @@ class ApplicationData {
         return "$applicationId, $riskAddressPostcode, $riskAddressState, $carParkingMethod, $carRedBookID, $carRegistrationNumber, $carUse, $carVehicleColour, $carVehicleCondition, $carVehicleFinanceType, $carAnnualMileage, $carAccessories, $carFactoryOptions, $carPreviousInsuranceCoverType, $carPreviousInsuranceExpiryDate, $carPreviousInsuranceHasPreviousInsurance, $carNoInsuranceReason, $carPurchaseDetailsIsRecentPurchase, $carMake, $carModel, $carRegistrationYear, $carBodyModifications, $carOtherModifications, $policyDetailsAdditionalExcessCode, $policyDetailsChoiceOfRepairer, $policyDetailsCommencementDate, $policyDetailsCoverType, $policyDetailsHireCarOption, $policyDetailsInstalmentplanNumber, $policyDetailsNoClaimsDiscount, $policyDetailsRoadsideOption, $policyDetailsStampDutyExemption, $policyDetailsWindscreenOption, $policyDetailsNcdProtection, $salesChannel, $InsuranceProductProductCode, $InsuranceProductProductGroup, $pricingMonthlyAmountPayable, $pricingMonthlyCanBuyOnline, $pricingMonthlyFirstPayment, $pricingMonthlySubsequentPayment, $pricingMonthlyTotalPremium, $pricingMonthlyUnderwritingResults, $pricingYearlyAmountPayable, $pricingYearlyCanBuyOnline, $pricingYearlyTotalPremium, $pricingYearlyUnderwritingResults, $underwritingKnockOut, $applicationStatus, $applicationStartDate, $applicationLastModifiedDate, $lastPricingDate, $paymentType"
     }
 
-
-    private enum class InstalmentPlanNumber {
+    enum class InstalmentPlanNumber {
         MONTHLY_PAYMENT, ANNUAL_PAYMENT
     }
-
 
 }

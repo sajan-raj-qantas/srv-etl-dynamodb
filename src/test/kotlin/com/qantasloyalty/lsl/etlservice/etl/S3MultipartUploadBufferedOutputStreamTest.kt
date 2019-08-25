@@ -27,7 +27,7 @@ internal class S3MultipartUploadBufferedOutputStreamTest {
         val bucketName = "avro-file-transfer"
         val keyName = "etl/multipart-test.csv"
 
-        val outputStream = S3MultipartUploadBufferedOutputStream(
+        val outputStream = S3MultipartUploadBufferedOutputStream("test",
                 bucketName,
                 keyName
         )
