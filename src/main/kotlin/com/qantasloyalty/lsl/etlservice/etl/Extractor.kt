@@ -32,7 +32,7 @@ class  Extractor @Autowired constructor(private val dynamoDB: AmazonDynamoDB) {
 
             // Do the scan
             val scan = ScanRequest()
-                    .withTableName("avro-dev-integration-motorapplication-application")
+                    .withTableName("avro-dev-integration-motorapplication-application-data")
                     //.withFilterExpression()
                     .withLimit(100)
                     .withReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL)

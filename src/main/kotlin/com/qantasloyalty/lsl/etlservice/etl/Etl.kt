@@ -4,19 +4,10 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB
 import com.amazonaws.services.dynamodbv2.model.AttributeValue
 import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity
 import com.amazonaws.services.dynamodbv2.model.ScanRequest
-import com.amazonaws.services.dynamodbv2.model.ScanResult
 import com.google.common.util.concurrent.RateLimiter
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.DisposableHandle
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
-import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
@@ -48,7 +39,7 @@ class Etl @Autowired constructor(
 
             // Do the scan
             val scan = ScanRequest()
-                    .withTableName("avro-dev-integration-motorapplication-application")
+                    .withTableName("avro-dev-integration-motorapplication-application-data")
                     //.withFilterExpression()
                     .withLimit(100)
                     .withTotalSegments(threads + 1)

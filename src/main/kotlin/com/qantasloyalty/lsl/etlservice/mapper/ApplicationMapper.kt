@@ -15,13 +15,13 @@ class ApplicationMapper(@Autowired val decryptor: ApplicationDataDecryptor,
         return objectMapper.convertValue(transformedMap, Application::class.java)
     }
 
-    fun fromAttributeValuesToApplicationData(attributesMap: Map<String, AttributeValue>): ApplicationDataNew {
+    fun fromAttributeValuesToApplicationData(attributesMap: Map<String, AttributeValue>): ApplicationData {
         val decrypt = decryptor.decrypt(attributesMap)
         val transformedMap = transform(decrypt)
-        var applicationDataNew = ApplicationDataNew()
+        var applicationDataNew = ApplicationData()
         //println(transformedMap)
         try {
-            applicationDataNew = objectMapper.convertValue(transformedMap, ApplicationDataNew::class.java)
+            applicationDataNew = objectMapper.convertValue(transformedMap, ApplicationData::class.java)
             if(transformedMap.containsKey("attributes")) {
                 var attributesString: String = transformedMap.get("attributes") as String
                 val applicationAttributes = objectMapper.readValue(attributesString, ApplicationAttributes::class.java)

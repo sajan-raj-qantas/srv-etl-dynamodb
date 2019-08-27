@@ -31,6 +31,9 @@ data class PolicyDetails (
 
 data class PolicyDetailsNoClaimsDiscount (
      var type: String? = null){
+    override fun toString(): String {
+        return if(type!=null) type!! else ""
+    }
 }
 
 data class Address (

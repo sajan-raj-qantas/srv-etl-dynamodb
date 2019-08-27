@@ -41,7 +41,7 @@ class EtlService @Autowired constructor(
 
             // Do the scan
             val scan = ScanRequest()
-                    .withTableName("avro-dev-integration-motorapplication-application")
+                    .withTableName("avro-dev-integration-motorapplication-application-data")
                     //.withFilterExpression()
                     .withLimit(100)
                     .withTotalSegments(threads + 1)
@@ -65,7 +65,7 @@ class EtlService @Autowired constructor(
 
             iterations = iterations.inc()
             println("id $id on iteration $iterations")
-        } while (exclusiveStartKey != null && iterations < 25 && !channel.isClosedForSend)
+        } while (exclusiveStartKey != null && iterations < 10 && !channel.isClosedForSend)
 
         channel.close()
         transformer.closeDestinationStreams()
@@ -78,7 +78,7 @@ class EtlService @Autowired constructor(
 
         jobs += launch {
             receiveChannel.consumeEach {
-                println("${it.segment}:: ${it.iteration} - Got ${it.scanResult.count} items:: ${it.scanResult.lastEvaluatedKey}")
+                //println("${it.segment}:: ${it.iteration} - Got ${it.scanResult.count} items:: ${it.scanResult.lastEvaluatedKey}")
                 processScanResult(it)
             }
         }

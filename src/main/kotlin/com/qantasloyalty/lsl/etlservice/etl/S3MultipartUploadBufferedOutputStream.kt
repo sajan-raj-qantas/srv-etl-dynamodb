@@ -11,7 +11,8 @@ import java.io.OutputStream
 import java.util.*
 
 class S3MultipartUploadBufferedOutputStream(
-        val id:String,
+        val heading:String,
+        val id: String,
         val bucket: String,
         val objectId: String,
         val maxPartSize: Int = 5 * 1024 * 1024 + 1 // 5 MB
@@ -31,10 +32,18 @@ class S3MultipartUploadBufferedOutputStream(
     var multipartNumber = 0
     var multipartIndex = 0
     var fileIndex = 0
+    var headingWritten = false
 
     @Synchronized
     override fun write(b: Int) {
-       // println("###Writing###")
+
+        if (!headingWritten) {
+            //Write Heading
+            headingWritten = true
+            write((heading+"\n").toByteArray())
+        }
+
+        // println("###Writing###")
         if (multipartIndex == 0) {
             buffer = ByteArray(maxPartSize)
         }
@@ -55,7 +64,7 @@ class S3MultipartUploadBufferedOutputStream(
 
     override fun close() {
         println("stream close() invoked for $id")
-        if(multipartIndex!=0){
+        if (multipartIndex != 0) {
             uploadPart()
         }
         val compRequest = CompleteMultipartUploadRequest(bucket, objectId, initResponse.uploadId, partETags)

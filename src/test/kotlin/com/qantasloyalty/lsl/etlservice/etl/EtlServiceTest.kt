@@ -12,7 +12,7 @@ class EtlServiceTest {
 
 	@Test
 	fun testEtlService() {
-		etlService.doEtl(3)
+		etlService.doEtl(2)
 		//Thread.sleep(10000)
 	}
 

@@ -1,28 +1,31 @@
 package com.qantasloyalty.lsl.etlservice.etl
 
-import com.qantasloyalty.lsl.etlservice.model.ApplicationDataNew
+import com.qantasloyalty.lsl.etlservice.model.ApplicationData
+import org.apache.commons.collections4.CollectionUtils
 import org.springframework.stereotype.Component
 
 @Component
 class ApplicationDataLoader {
 
     private val bucketName = "avro-file-transfer"
-    private val above90AppKeyName = "etl/Car90DayFile-Application.csv"
-    private val above90PartyKeyName = "etl/Car90DayFile-Party.csv"
-    private val below90AppKeyName = "etl/Car-Application.csv"
-    private val below90PartykeyName = "etl/Car-Party.csv"
+    private val below90AppKeyName  = "etl/Car90DayFile-Application.csv"
+    private val below90PartyKeyName = "etl/Car90DayFile-Party.csv"
+    private val above90AppKeyName = "etl/Car-Application.csv"
+    private val above90PartyKeyName = "etl/Car-Party.csv"
 
-    private val above90AppStream = S3MultipartUploadBufferedOutputStream("above90App", bucketName, above90AppKeyName)
-    private val above90PartyStream = S3MultipartUploadBufferedOutputStream("above90Party", bucketName, above90PartyKeyName)
-    private val below90AppStream = S3MultipartUploadBufferedOutputStream("below90App", bucketName, below90AppKeyName)
-    private val below90PartyStream = S3MultipartUploadBufferedOutputStream("below90Party", bucketName, below90PartykeyName)
+    private val above90AppStream = S3MultipartUploadBufferedOutputStream(ApplicationData.above90AppHeading(),"above90App", bucketName, above90AppKeyName)
+    private val above90PartyStream = S3MultipartUploadBufferedOutputStream(ApplicationData.above90PartyHeading(),"above90Party", bucketName, above90PartyKeyName)
+    private val below90AppStream = S3MultipartUploadBufferedOutputStream(ApplicationData.below90AppHeading(),"below90App", bucketName, below90AppKeyName)
+    private val below90PartyStream = S3MultipartUploadBufferedOutputStream(ApplicationData.below90PartyHeading(),"below90Party", bucketName, below90PartyKeyName)
 
-    fun loadApplicationData(applicationDataNew: ApplicationDataNew) {
+    fun loadApplicationData(applicationData: ApplicationData) {
         //TODO Make this parallel? Use coroutines or channels?
-        below90AppStream.write(applicationDataNew.toBelow90AppCsvString().toByteArray())
-        below90PartyStream.write(applicationDataNew.toBelow90PartyCsvString().toByteArray())
-        above90AppStream.write(applicationDataNew.toAbove90AppCsvString().toByteArray())
-        above90PartyStream.write(applicationDataNew.toAbove90AppCsvString().toByteArray())
+        below90AppStream.write(applicationData.toBelow90AppCsvString().toByteArray())
+        above90AppStream.write(applicationData.toAbove90AppCsvString().toByteArray())
+        if(!CollectionUtils.isEmpty(applicationData.attributes?.parties)) {
+            below90PartyStream.write(applicationData.toBelow90PartyCsvString().toByteArray())
+            above90PartyStream.write(applicationData.toAbove90PartyCsvString().toByteArray())
+        }
     }
 
     fun closeStreams() {
