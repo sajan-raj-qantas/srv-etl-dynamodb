@@ -11,9 +11,9 @@ data class ApplicationData(
         var attributes: ApplicationAttributes? = null,
         @JsonIgnore
         var pricing: Pricing? = null,
-       // var salesChannel: String? = null, // from Application
-       // var startChannel: String? = null, //TODO find out source
-       // var applicationStatus: String? = null, // from Application
+        // var salesChannel: String? = null, // from Application
+        // var startChannel: String? = null, //TODO find out source
+        // var applicationStatus: String? = null, // from Application
         var createdTimestamp: String? = null, // from Application
         var lastUpdatedTimestamp: String? = null, // from Application
         //var lastPricingRequestedTimestamp: String? = null, // from Application
@@ -209,62 +209,62 @@ data class ApplicationData(
     fun toBelow90AppCsvString(): String {
         var csvString = StringBuilder()
         csvString.append("\"$applicationId\", ")
-        csvString.append("\"${this.attributes?.campaign?.offerId?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.riskAddress?.postcode?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.riskAddress?.state?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.parkingMethod?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.redbookId?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.registrationNumber?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.use?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.vehicleColour?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.vehicleCondition?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.vehicleFinanceType?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.annualMileage?:""}\",")
+        csvString.append("\"${this.attributes?.campaign?.offerId ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.riskAddress?.postcode ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.riskAddress?.state ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.parkingMethod ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.redbookId ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.registrationNumber ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.use ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.vehicleColour ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.vehicleCondition ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.vehicleFinanceType ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.annualMileage ?: ""}\",")
         csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.accessories)}\",")
         csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.factoryOptions)}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.coverType?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.expiryDate?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.hasPreviousInsurance?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.noInsuranceReason?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.noInsuranceReasonDescription?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.companyName?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.isRecentPurchase?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.purchaseDate?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.purchasePrice?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.ageRestriction?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.makeDescription?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.fuel?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.transmission?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.body?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.modelDescription?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.registrationYear?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.marketValue?:""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.coverType ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.expiryDate ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.hasPreviousInsurance ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.noInsuranceReason ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.noInsuranceReasonDescription ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.companyName ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.isRecentPurchase ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.purchaseDate ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.purchasePrice ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.ageRestriction ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.makeDescription ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.fuel ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.transmission ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.body ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.modelDescription ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.registrationYear ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.marketValue ?: ""}\",")
         csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.bodyModifications)}) \",")
         csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.otherModifications)}) \",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.additionalExcessCode?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.choiceOfRepairer?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.commencementDate?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.coverType?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.hireCarOption?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.instalmentPlanNumber?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.noClaimsDiscount?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.roadsideOption?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.stampDutyExemption?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.windscreenOption?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.ncdProtection?:""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.additionalExcessCode ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.choiceOfRepairer ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.commencementDate ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.coverType ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.hireCarOption ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.instalmentPlanNumber ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.noClaimsDiscount ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.roadsideOption ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.stampDutyExemption ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.windscreenOption ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.ncdProtection ?: ""}\",")
         //csvString.append("\"${this.salesChannel?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.insuranceProduct?.productCode?:""""""}\",")
-        csvString.append("\"${this.attributes?.policy?.insuranceProduct?.productGroup?:""}\",")
+        csvString.append("\"${this.attributes?.policy?.insuranceProduct?.productCode ?: """"""}\",")
+        csvString.append("\"${this.attributes?.policy?.insuranceProduct?.productGroup ?: ""}\",")
         appendPricingFields(csvString, false)
         appendPricingExcessFields(csvString)
         appendUnderWritingKnockout(csvString)
-       // csvString.append("\"${this.applicationStatus?:""}\",")
-        csvString.append("\"${this.createdTimestamp?:""}\",")
-        csvString.append("\"${this.lastUpdatedTimestamp?:""}\",")
-       // csvString.append("\"${this.lastPricingRequestedTimestamp?:""}\",")
-        csvString.append("\"${this.paymentType?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.insuredValueDetails?.agreedValue?:""}\",")
-        csvString.append("\"${this.attributes?.policy?.car?.insuredValueDetails?.marketOrAgreedValue?:""}\",")
+        // csvString.append("\"${this.applicationStatus?:""}\",")
+        csvString.append("\"${this.createdTimestamp ?: ""}\",")
+        csvString.append("\"${this.lastUpdatedTimestamp ?: ""}\",")
+        // csvString.append("\"${this.lastPricingRequestedTimestamp?:""}\",")
+        csvString.append("\"${this.paymentType ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.insuredValueDetails?.agreedValue ?: ""}\",")
+        csvString.append("\"${this.attributes?.policy?.car?.insuredValueDetails?.marketOrAgreedValue ?: ""}\",")
         appendApplicationStages(csvString)
         csvString.append("\n")
         return csvString.toString()
@@ -275,31 +275,32 @@ data class ApplicationData(
         //csvString.append("$applicationId, \n")
         this.attributes?.parties?.stream()?.forEach {
             csvString.append("\"$applicationId\", ")
-            csvString.append("\"${it.title?:""}\", ")
-            csvString.append("\"${it.dob?:""}\", ")
-            csvString.append("\"${it.lastName?:""}\", ")
-            csvString.append("\"${it.firstName?:""}\", ")
-            csvString.append("\"${it.ownsAnotherCar?:""}\", ")
-            csvString.append("\"${it.ownsHome?:""}\", ")
-            csvString.append("\"${it.relationshipToPolicyHolder?:""}\", ")
-            csvString.append("\"${it.relationshipToRegularDriver?:""}\", ")
-            csvString.append("\"${it.qffNumber?:""}\", ")
-            csvString.append("\"${it.memberId?:""}\", ")
-            csvString.append("\"${it.contactDetails?.emailAddress?:""}\", ")
-            csvString.append("\"${it.contactDetails?.mobileNumber?:""}\", ")
+            csvString.append("\"${it.title ?: ""}\", ")
+            csvString.append("\"${it.dob ?: ""}\", ")
+            csvString.append("\"${it.lastName ?: ""}\", ")
+            csvString.append("\"${it.firstName ?: ""}\", ")
+            csvString.append("\"${it.ownsAnotherCar ?: ""}\", ")
+            csvString.append("\"${it.ownsHome ?: ""}\", ")
+            csvString.append("\"${it.relationshipToPolicyHolder ?: ""}\", ")
+            csvString.append("\"${it.relationshipToRegularDriver ?: ""}\", ")
+            csvString.append("\"${it.qffNumber ?: ""}\", ")
+            csvString.append("\"${it.memberId ?: ""}\", ")
+            csvString.append("\"${it.contactDetails?.emailAddress ?: ""}\", ")
+            csvString.append("\"${it.contactDetails?.mobileNumber ?: ""}\", ")
             csvString.append("\"${CollectionUtils.isNotEmpty(it.claims)}\", ")
-            csvString.append("\"${it.licence?.licenceType?:""}\", ")
-            csvString.append("\"${it.licence?.date?:""}\", ")
-            csvString.append("\"${it.licence?.country?:""}\", ")
-            csvString.append("\"${it.livesAtPolicyHolderAddress?:""}\", ")
-            csvString.append("\"${it.gender?:""}\", ")
-            csvString.append("\"${it.retired?:""}\", ")
-            csvString.append("\"${it.authorisedToPolicy?:""}\", ")
-            csvString.append("\"${it.roles?.joinToString(",")?:""}\"")
+            csvString.append("\"${it.licence?.licenceType ?: ""}\", ")
+            csvString.append("\"${it.licence?.date ?: ""}\", ")
+            csvString.append("\"${it.licence?.country ?: ""}\", ")
+            csvString.append("\"${it.livesAtPolicyHolderAddress ?: ""}\", ")
+            csvString.append("\"${it.gender ?: ""}\", ")
+            csvString.append("\"${it.retired ?: ""}\", ")
+            csvString.append("\"${it.authorisedToPolicy ?: ""}\", ")
+            csvString.append("\"${it.roles?.joinToString(",") ?: ""}\"")
             csvString.appendln()
         }
         return csvString.toString()
     }
+
     fun toAbove90PartyCsvString(): String {
         var csvString = StringBuilder()
         //csvString.append("$applicationId, \n")
@@ -307,20 +308,20 @@ data class ApplicationData(
                 //?.filter { it.roles != null && CollectionUtils.containsAny(it.roles, arrayOf("POLICY_HOLDER", "REGULAR_DRIVER")) }
                 ?.forEach {
                     csvString.append("\"$applicationId\", ")
-                    csvString.append("\"${it.title?:""}\", ")
-                    csvString.append("\"${it.dob?:""}\", ")
-                    csvString.append("\"${it.lastName?:""}\", ")
-                    csvString.append("\"${it.firstName?:""}\", ")
-                    csvString.append("\"${it.qffNumber?:""}\", ")
-                    csvString.append("\"${it.memberId?:""}\", ")
-                    csvString.append("\"${it.contactDetails?.emailAddress?:""}\", ")
-                    csvString.append("\"${it.contactDetails?.mobileNumber?:""}\", ")
-                    csvString.append("\"${CollectionUtils.isNotEmpty(it.claims)?:""}\", ")
-                    csvString.append("\"${it.gender?:""}\", ")
-                    csvString.append("\"${it.roles?.joinToString(",")?:""}\"")
-                    csvString.append("\"${it.retired?:""}\", ")
-                    csvString.append("\"${it.ownsHome?:""}\", ")
-                    csvString.append("\"${it.ownsAnotherCar?:""}\", ")
+                    csvString.append("\"${it.title ?: ""}\", ")
+                    csvString.append("\"${it.dob ?: ""}\", ")
+                    csvString.append("\"${it.lastName ?: ""}\", ")
+                    csvString.append("\"${it.firstName ?: ""}\", ")
+                    csvString.append("\"${it.qffNumber ?: ""}\", ")
+                    csvString.append("\"${it.memberId ?: ""}\", ")
+                    csvString.append("\"${it.contactDetails?.emailAddress ?: ""}\", ")
+                    csvString.append("\"${it.contactDetails?.mobileNumber ?: ""}\", ")
+                    csvString.append("\"${CollectionUtils.isNotEmpty(it.claims) ?: ""}\", ")
+                    csvString.append("\"${it.gender ?: ""}\", ")
+                    csvString.append("\"${it.roles?.joinToString(",") ?: ""}\"")
+                    csvString.append("\"${it.retired ?: ""}\", ")
+                    csvString.append("\"${it.ownsHome ?: ""}\", ")
+                    csvString.append("\"${it.ownsAnotherCar ?: ""}\", ")
                     csvString.appendln()
                 }
         return csvString.toString()
@@ -329,45 +330,45 @@ data class ApplicationData(
     fun toAbove90AppCsvString(): String {
         var csvString = StringBuilder()
         csvString.append("\"$applicationId\", ")
-        csvString.append("\"${this.attributes?.campaign?.offerId?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.registrationNumber?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.use?:""}\", ")
-        csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.accessories)?:""}\", ")
-        csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.factoryOptions)?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.companyName?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.expiryDate?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.purchasePrice?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.purchaseDate?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.makeDescription?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.modelDescription?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.body?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.registrationYear?:""}\", ")
-        csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.bodyModifications)?:""}\", ")
-        csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.otherModifications)?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.car?.vehicleFinanceType?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.additionalExcessCode?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.choiceOfRepairer?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.commencementDate?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.coverType?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.hireCarOption?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.instalmentPlanNumber?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.noClaimsDiscount?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.roadsideOption?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.stampDutyExemption?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.windscreenOption?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.policyDetails?.ncdProtection?:""}\", ")
+        csvString.append("\"${this.attributes?.campaign?.offerId ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.registrationNumber ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.use ?: ""}\", ")
+        csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.accessories) ?: ""}\", ")
+        csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.factoryOptions) ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.companyName ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.previousInsurance?.expiryDate ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.purchasePrice ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.purchaseDetails?.purchaseDate ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.makeDescription ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.modelDescription ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.body ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.registrationYear ?: ""}\", ")
+        csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.bodyModifications) ?: ""}\", ")
+        csvString.append("\"${!CollectionUtils.isEmpty(attributes?.policy?.car?.otherModifications) ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.car?.vehicleFinanceType ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.additionalExcessCode ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.choiceOfRepairer ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.commencementDate ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.coverType ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.hireCarOption ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.instalmentPlanNumber ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.noClaimsDiscount ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.roadsideOption ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.stampDutyExemption ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.windscreenOption ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.policyDetails?.ncdProtection ?: ""}\", ")
         // csvString.append("\"${this.salesChannel?:""}\", ")
         // csvString.append("\"${this.startChannel?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.insuranceProduct?.productCode?:""}\", ")
-        csvString.append("\"${this.attributes?.policy?.insuranceProduct?.productGroup?:""}\", ")
+        csvString.append("\"${this.attributes?.policy?.insuranceProduct?.productCode ?: ""}\", ")
+        csvString.append("\"${this.attributes?.policy?.insuranceProduct?.productGroup ?: ""}\", ")
         appendPricingFields(csvString, true)
         appendUnderWritingKnockout(csvString)
         // csvString.append("\"${this.applicationStatus?:""}\", ")
-        csvString.append("\"${this.createdTimestamp?:""}\", ")
-        csvString.append("\"${this.lastUpdatedTimestamp?:""}\", ")
+        csvString.append("\"${this.createdTimestamp ?: ""}\", ")
+        csvString.append("\"${this.lastUpdatedTimestamp ?: ""}\", ")
         // csvString.append("\"${this.lastPricingRequestedTimestamp?:""}\", ")
         appendDriverCount(csvString)
-        csvString.append("\"${this.paymentType?:""}\", ")
+        csvString.append("\"${this.paymentType ?: ""}\", ")
         appendApplicationStages(csvString)
         csvString.append("\n")
         return csvString.toString()
@@ -375,68 +376,68 @@ data class ApplicationData(
     }
 
     private fun appendUnderWritingKnockout(csvString: StringBuilder) {
-        csvString.append(" ,")
-        //TODO("not implemented") //
-        //Comment in files says  - Populate this to true if either of convictions, suspensions , cancellations and maxdemerits is true
-        //Need to know for which party role?
+        csvString.append("${this.attributes?.other?.cancellations ?: false
+                .or(this.attributes?.other?.suspensions ?: false)
+                .or(this.attributes?.other?.convictions ?: false)
+                .or(this.attributes?.other?.maxDemerits ?: false)},")
     }
 
     private fun appendApplicationStages(csvString: StringBuilder) {
-        csvString.append("\"${attributes?.webEvents?.pages?.quoteReview?:""}\", ") // hasReachedQuoteStage
-        csvString.append("\"${attributes?.webEvents?.pages?.emailedQuote?:""}\", ") // hasEmailedQuote
-        csvString.append("\"${attributes?.webEvents?.pages?.startPurchase?:""}\", ") // hasProgressedPastQuotestage
-        csvString.append("\"${attributes?.webEvents?.pages?.purchaseReview?:""}\", ") // hasReachedSaleStage
+        csvString.append("\"${attributes?.webEvents?.pages?.quoteReview ?: ""}\", ") // hasReachedQuoteStage
+        csvString.append("\"${attributes?.webEvents?.pages?.emailedQuote ?: ""}\", ") // hasEmailedQuote
+        csvString.append("\"${attributes?.webEvents?.pages?.startPurchase ?: ""}\", ") // hasProgressedPastQuotestage
+        csvString.append("\"${attributes?.webEvents?.pages?.purchaseReview ?: ""}\", ") // hasReachedSaleStage
     }
 
     private fun appendPricingExcessFields(csvString: StringBuilder) {
         csvString.append("\"${pricing?.details?.otherExcesses
                 ?.find { StringUtils.equals(it.code, OtherExcessCode.STANDARD_EXCESS.toString()) }
-                ?.amount?:""}\", ")
+                ?.amount ?: ""}\", ")
         csvString.append("\"${pricing?.details?.otherExcesses
                 ?.find { StringUtils.equals(it.code, OtherExcessCode.WINDOW_GLASS.toString()) }
-                ?.amount?:""}\", ")
+                ?.amount ?: ""}\", ")
         csvString.append("\"${pricing?.details?.otherExcesses
                 ?.find { StringUtils.equals(it.code, OtherExcessCode.AGE_DRIVERS_UNDER_21.toString()) }
-                ?.amount?:""}\", ")
+                ?.amount ?: ""}\", ")
         csvString.append("\"${pricing?.details?.otherExcesses
                 ?.find { StringUtils.equals(it.code, OtherExcessCode.AGE_DRIVERS_21_24.toString()) }
-                ?.amount?:""}\", ")
+                ?.amount ?: ""}\", ")
         csvString.append("\"${pricing?.details?.otherExcesses
                 ?.find { StringUtils.equals(it.code, OtherExcessCode.INEXPERIENCED_DRIVER.toString()) }
-                ?.amount?:""}\", ")
+                ?.amount ?: ""}\", ")
         csvString.append("\"${pricing?.details?.otherExcesses
                 ?.find { StringUtils.equals(it.code, OtherExcessCode.UNLISTED_DRIVER.toString()) }
-                ?.amount?:""}\", ")
+                ?.amount ?: ""}\", ")
     }
 
     private fun appendPricingFields(csvString: StringBuilder, above90: Boolean) {
         val monthlyPricing = getPricing(InstalmentPlanNumber.MONTHLY_PAYMENT)
         val yearlyPricing = getPricing(InstalmentPlanNumber.ANNUAL_PAYMENT)
         if (above90) {
-            csvString.append("\"${monthlyPricing?.canBuyOnline?:""}\", ")
-            csvString.append("\"${monthlyPricing?.totalPremium?:""}\", ")
-            csvString.append("\"${monthlyPricing?.underwritingResult?:""}\", ")
-            csvString.append("\"${yearlyPricing?.canBuyOnline?:""}\", ")
-            csvString.append("\"${yearlyPricing?.totalPremium?:""}\", ")
-            csvString.append("\"${yearlyPricing?.underwritingResult?:""}\", ")
-        }else{
-            csvString.append("\"${monthlyPricing?.amountPayable?:""}\", ")
-            csvString.append("\"${monthlyPricing?.canBuyOnline?:""}\", ")
-            csvString.append("\"${monthlyPricing?.firstPayment?:""}\", ")
-            csvString.append("\"${monthlyPricing?.subsequentPayment?:""}\", ")
-            csvString.append("\"${monthlyPricing?.totalPremium?:""}\", ")
-            csvString.append("\"${monthlyPricing?.underwritingResult?:""}\", ")
-            csvString.append("\"${yearlyPricing?.amountPayable?:""}\", ")
-            csvString.append("\"${yearlyPricing?.canBuyOnline?:""}\", ")
-            csvString.append("\"${yearlyPricing?.totalPremium?:""}\", ")
-            csvString.append("\"${yearlyPricing?.underwritingResult?:""}\", ")
+            csvString.append("\"${monthlyPricing?.canBuyOnline ?: ""}\", ")
+            csvString.append("\"${monthlyPricing?.totalPremium ?: ""}\", ")
+            csvString.append("\"${monthlyPricing?.underwritingResult ?: ""}\", ")
+            csvString.append("\"${yearlyPricing?.canBuyOnline ?: ""}\", ")
+            csvString.append("\"${yearlyPricing?.totalPremium ?: ""}\", ")
+            csvString.append("\"${yearlyPricing?.underwritingResult ?: ""}\", ")
+        } else {
+            csvString.append("\"${monthlyPricing?.amountPayable ?: ""}\", ")
+            csvString.append("\"${monthlyPricing?.canBuyOnline ?: ""}\", ")
+            csvString.append("\"${monthlyPricing?.firstPayment ?: ""}\", ")
+            csvString.append("\"${monthlyPricing?.subsequentPayment ?: ""}\", ")
+            csvString.append("\"${monthlyPricing?.totalPremium ?: ""}\", ")
+            csvString.append("\"${monthlyPricing?.underwritingResult ?: ""}\", ")
+            csvString.append("\"${yearlyPricing?.amountPayable ?: ""}\", ")
+            csvString.append("\"${yearlyPricing?.canBuyOnline ?: ""}\", ")
+            csvString.append("\"${yearlyPricing?.totalPremium ?: ""}\", ")
+            csvString.append("\"${yearlyPricing?.underwritingResult ?: ""}\", ")
         }
-
     }
 
     private fun appendDriverCount(csvString: StringBuilder) {
-        csvString.append("\""+(this.attributes?.parties?.stream()?.filter { it.livesAtPolicyHolderAddress != null && it.livesAtPolicyHolderAddress!! }?.count())+"\",")
-        csvString.append("\""+this.attributes?.parties?.count()?.or(0)+"\",")
+        csvString.append("${this.attributes?.parties?.stream()?.filter { it.livesAtPolicyHolderAddress != null && it.livesAtPolicyHolderAddress!! }?.count()
+                ?: 0},")
+        csvString.append("${this.attributes?.parties?.count() ?: 0},")
     }
 
 
@@ -451,8 +452,20 @@ data class ApplicationAttributes(
         var campaign: Campaign? = null,
         var salesChannel: String? = null,
         var policy: Policy? = null,
-        var webEvents: WebEvents?=null) {
+        var webEvents: WebEvents? = null,
+        var other: OtherAttributes? = null) {
 }
+
+data class OtherAttributes(
+        var cancellations: Boolean? = null,
+        var endorsements: Boolean? = null,
+        var convictions: Boolean? = null,
+        var maxDemerits: Boolean? = null,
+        var suspensions: Boolean? = null,
+        var deliveringGoods: String? = null,
+        var carryingPassengers: String? = null,
+        var embargo: String? = null
+) {}
 
 data class WebEvents(
         var initialReferrer: String? = null,
