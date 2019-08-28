@@ -24,14 +24,15 @@ class Transformer(
     }
 
     fun closeDestinationStreams() {
-        applicationDataLoader.closeStreams()
+        applicationDataLoader.closeStreamWriters()
     }
 
     private fun load(applicationDataList: List<ApplicationData>?) {
         println("Calling applicationDataLoader for ${applicationDataList?.size} items")
-        applicationDataList?.forEach {
+        /*applicationDataList?.forEach {
             applicationDataLoader.loadApplicationData(it)
-        }
+        }*/
+        applicationDataLoader.loadApplicationDataList(applicationDataList)
     }
 
 

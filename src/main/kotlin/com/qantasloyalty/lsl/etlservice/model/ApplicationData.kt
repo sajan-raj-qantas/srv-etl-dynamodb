@@ -30,7 +30,7 @@ data class ApplicationData(
             headingBuilder.append("Car.use,")
             headingBuilder.append("Car.accessories,")
             headingBuilder.append("Car.factoryOptions,")
-            headingBuilder.append("Car.previouInsurance.companyName,")
+            headingBuilder.append("Car.previouInsurance.previousInsuranceCompanyName,")
             headingBuilder.append("Car.previousInsurance.expiryDate,")
             headingBuilder.append("Car.purchaseDetails.purchasePrice,")
             headingBuilder.append("Car.purchaseDetails.purchaseDate,")
@@ -125,14 +125,14 @@ data class ApplicationData(
             headingBuilder.append("Car.previousInsurance.hasPreviousInsurance,")
             headingBuilder.append("Car.previousInsurance.noInsuranceReason,")
             headingBuilder.append("Car.previousInsurance.noInsuranceReasonDescription,")
-            headingBuilder.append("Car.previouInsurance.companyName,")
+            headingBuilder.append("Car.previouInsurance.previousInsuranceCompanyName,")
             headingBuilder.append("Car.purchaseDetails.isRecentPurchase,")
             headingBuilder.append("Car.purchaseDetails.purchaseDate,")
             headingBuilder.append("Car.purchaseDetails.purchasePrice,")
-            headingBuilder.append("Car.ageRestriction,")
+            headingBuilder.append("Car.carAgeRestriction,")
             headingBuilder.append("Car.make,")
             headingBuilder.append("Car.fuel,")
-            headingBuilder.append("Car.transmission,")
+            headingBuilder.append("Car.carTransmission,")
             headingBuilder.append("Car.body,")
             headingBuilder.append("Car.model,")
             headingBuilder.append("Car.registrationYear,")
@@ -484,3 +484,4 @@ data class WebEventPages(
 data class Campaign(var offerId: String? = null) {}
 
 enum class InstalmentPlanNumber { MONTHLY_PAYMENT, ANNUAL_PAYMENT }
+
